@@ -3,553 +3,1995 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Crop Recommendation AI</title>
-  <meta name="description" content="AI-powered crop recommendation system using soil and climate data.">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>AgriVision AI — Intelligent Crop Recommendation Engine</title>
+  <meta name="description" content="AI-driven precision agriculture system to recommend the optimal crop based on soil nutrients and meteorological parameters.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-base: #080d11;
+      --bg-surface: rgba(15, 23, 29, 0.75);
+      --bg-card: rgba(21, 32, 40, 0.65);
+      --bg-card-hover: rgba(26, 40, 51, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: #10b981;
+      --accent-emerald: #10b981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: #0a0f14;
-      color: #e2e8f0;
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 65%, rgba(6, 182, 212, 0.09) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-body);
       min-height: 100vh;
-      background-image:
-        radial-gradient(ellipse at 10% 20%, rgba(16,185,129,0.10) 0%, transparent 55%),
-        radial-gradient(ellipse at 90% 80%, rgba(6,182,212,0.07) 0%, transparent 55%);
+      line-height: 1.5;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    /* ── NAV ─────────────────────────────────────────── */
-    nav {
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 1.5rem 1.75rem 3.5rem;
+    }
+
+    /* Header & Navigation */
+    header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 0.9rem 2rem;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      background: rgba(10,15,20,0.85);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      align-items: center;
+      padding: 1.1rem 1.6rem;
+      background: var(--bg-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    .nav-brand {
+    .brand-group {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.9rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.35rem;
+      box-shadow: 0 0 20px var(--accent-emerald-glow);
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
       color: #fff;
     }
 
-    .nav-brand .leaf {
-      width: 32px; height: 32px;
-      background: linear-gradient(135deg, #10b981, #059669);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem;
-      box-shadow: 0 0 14px rgba(16,185,129,0.4);
+    .brand-title span {
+      color: var(--accent-emerald);
+      font-weight: 800;
     }
 
-    .nav-badge {
-      font-size: 0.68rem;
+    .brand-badge {
+      font-size: 0.7rem;
       font-weight: 600;
-      letter-spacing: 0.06em;
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
-      background: rgba(16,185,129,0.15);
-      border: 1px solid rgba(16,185,129,0.3);
-      color: #10b981;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+      margin-left: 0.5rem;
     }
 
-    .status-dot {
+    .nav-actions {
       display: flex;
       align-items: center;
-      gap: 0.45rem;
-      font-size: 0.78rem;
-      color: #64748b;
+      gap: 0.75rem;
+      flex-wrap: wrap;
     }
 
-    .dot {
-      width: 7px; height: 7px;
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      padding: 0.45rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-emerald);
       border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 8px #10b981;
-      animation: blink 2s infinite ease-in-out;
+      box-shadow: 0 0 10px var(--accent-emerald);
+      animation: pulseAnimation 2s infinite ease-in-out;
     }
 
-    @keyframes blink {
-      0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+    @keyframes pulseAnimation {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
     }
 
-    /* ── PAGE LAYOUT ─────────────────────────────────── */
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 4rem;
+    .btn-weather-nav {
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--accent-cyan);
+      padding: 0.45rem 0.95rem;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: var(--transition-smooth);
     }
 
-    .page-header {
-      text-align: center;
-      margin-bottom: 2.5rem;
+    .btn-weather-nav:hover {
+      background: rgba(6, 182, 212, 0.25);
+      color: #fff;
     }
 
-    .page-header h1 {
-      font-size: 2rem;
+    .lang-toggle {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.42rem 0.85rem;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: var(--transition-smooth);
+    }
+
+    .lang-toggle:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent-emerald);
+    }
+
+    /* Hero Section */
+    .hero-banner {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .hero-copy h1 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.5rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.4rem;
     }
 
-    .page-header h1 span {
-      background: linear-gradient(135deg, #10b981, #34d399, #67e8f9);
+    .hero-copy h1 .highlight {
+      background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #67e8f9 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .page-header p {
-      color: #64748b;
+    .hero-copy p {
+      color: var(--text-muted);
       font-size: 0.95rem;
+      max-width: 650px;
     }
 
-    /* ── MAIN CARD ───────────────────────────────────── */
-    .card {
-      background: rgba(15,22,30,0.8);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px;
-      padding: 2rem;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-    }
-
-    /* ── SECTION HEADING ─────────────────────────────── */
-    .section-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #10b981;
-      margin-bottom: 1rem;
+    .presets-bar {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
-    .section-label::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: rgba(16,185,129,0.2);
-    }
-
-    /* ── INPUT GRID ──────────────────────────────────── */
-    .input-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-
-    .field label {
-      font-size: 0.82rem;
+    .preset-label {
+      font-size: 0.75rem;
       font-weight: 600;
-      color: #94a3b8;
-      display: flex;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      margin-right: 0.2rem;
+    }
+
+    .preset-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
       gap: 0.35rem;
+      transition: var(--transition-smooth);
+      font-family: inherit;
     }
 
-    .field label .icon {
-      width: 20px; height: 20px;
-      background: rgba(16,185,129,0.1);
-      border-radius: 5px;
+    .preset-chip:hover {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: var(--accent-emerald);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* Alerts and Warning Banners */
+    .alert-banner {
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.4rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      animation: fadeInScale 0.35s ease forwards;
+    }
+
+    .alert-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      color: #fecdd3;
+    }
+
+    .alert-error .alert-icon {
+      color: var(--accent-rose);
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .alert-warning {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fde68a;
+    }
+
+    .alert-warning .alert-icon {
+      color: var(--accent-amber);
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .alert-content h4 {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .alert-content p, .alert-content ul {
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+
+    .alert-content ul {
+      margin-left: 1.2rem;
+      margin-top: 0.35rem;
+    }
+
+    /* Main Application Layout (2-Column Dashboard) */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1080px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glass Panels */
+    .glass-panel {
+      background: var(--bg-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 1.85rem;
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.4);
+    }
+
+    .section-title-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.85rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title i {
+      color: var(--accent-emerald);
+    }
+
+    .section-subtag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+
+    /* Category Blocks & Form Inputs */
+    .category-block {
+      margin-bottom: 1.6rem;
+    }
+
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+    }
+
+    .category-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .category-hint {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .param-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .param-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      transition: var(--transition-smooth);
+    }
+
+    .param-card:hover, .param-card:focus-within {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .param-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .param-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .param-icon-badge {
+      width: 22px;
+      height: 22px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 6px;
+      color: var(--accent-emerald);
+      font-size: 0.7rem;
+      font-weight: 800;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.65rem;
-      color: #10b981;
-      font-weight: 700;
-      font-style: normal;
     }
 
-    .field input[type="number"] {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      color: #f1f5f9;
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      font-weight: 500;
-      padding: 0.65rem 0.85rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      width: 100%;
+    .param-unit {
+      font-size: 0.72rem;
+      color: var(--text-dim);
     }
 
-    .field input[type="number"]:focus {
-      border-color: #10b981;
-      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
-    }
-
-    .field input[type="number"]::placeholder {
-      color: #334155;
-    }
-
-    .field .hint {
-      font-size: 0.7rem;
-      color: #475569;
-    }
-
-    /* ── DIVIDER ─────────────────────────────────────── */
-    .divider {
-      height: 1px;
-      background: rgba(255,255,255,0.06);
-      margin: 1.5rem 0;
-    }
-
-    /* ── PRESETS ─────────────────────────────────────── */
-    .presets-row {
+    .input-sync-group {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
+      gap: 0.9rem;
     }
 
-    .presets-label {
-      font-size: 0.75rem;
-      color: #475569;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      white-space: nowrap;
+    .slider-track-wrap {
+      flex: 1;
     }
 
-    .preset-btn {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.09);
-      color: #94a3b8;
-      border-radius: 20px;
-      padding: 0.32rem 0.8rem;
-      font-size: 0.8rem;
-      font-family: 'Inter', sans-serif;
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      outline: none;
       cursor: pointer;
-      transition: all 0.18s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
     }
 
-    .preset-btn:hover {
-      background: rgba(16,185,129,0.1);
-      border-color: rgba(16,185,129,0.4);
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--accent-emerald-glow);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .custom-number-input {
+      width: 82px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
       color: #fff;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.38rem 0.55rem;
+      text-align: right;
+      outline: none;
+      transition: var(--transition-smooth);
     }
 
-    /* ── ACTION ROW ──────────────────────────────────── */
-    .action-row {
+    .custom-number-input:focus {
+      border-color: var(--accent-emerald);
+      box-shadow: 0 0 0 2px var(--accent-emerald-glow);
+    }
+
+    /* Form Action Buttons */
+    .form-cta-bar {
       display: flex;
       gap: 0.75rem;
-      margin-top: 0.5rem;
+      margin-top: 1.5rem;
     }
 
-    .btn-primary {
+    .btn-predict {
       flex: 1;
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: #fff;
       border: none;
-      border-radius: 12px;
-      padding: 0.85rem 1.5rem;
-      font-family: 'Inter', sans-serif;
+      border-radius: var(--radius-md);
+      padding: 0.95rem 1.4rem;
+      font-family: var(--font-display);
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.6rem;
-      transition: all 0.2s ease;
-      box-shadow: 0 8px 20px rgba(16,185,129,0.3);
+      box-shadow: 0 8px 24px var(--accent-emerald-glow);
+      transition: var(--transition-smooth);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 12px 26px rgba(16,185,129,0.4);
+    .btn-predict:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
     }
 
-    .btn-secondary {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #64748b;
-      border-radius: 12px;
-      padding: 0.85rem 1.2rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 500;
+    .btn-reset {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      border-radius: var(--radius-md);
+      padding: 0.95rem 1.1rem;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: var(--transition-smooth);
     }
 
-    .btn-secondary:hover {
+    .btn-reset:hover {
+      background: rgba(255, 255, 255, 0.08);
       color: #fff;
-      background: rgba(255,255,255,0.08);
     }
 
-    /* ── RESULT ──────────────────────────────────────── */
-    .result-box {
-      margin-top: 1.75rem;
-      border-radius: 16px;
-      padding: 1.5rem 1.75rem;
-      background: linear-gradient(135deg,
-        rgba(16,185,129,0.12) 0%,
-        rgba(6,182,212,0.06) 100%);
-      border: 1px solid rgba(16,185,129,0.35);
-      animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+    /* Standby Placeholder Card */
+    .standby-card {
+      background: var(--bg-surface);
+      backdrop-filter: blur(20px);
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 3.5rem 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .radar-icon-box {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
       display: flex;
       align-items: center;
-      gap: 1.5rem;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: var(--accent-emerald);
+      margin-bottom: 1.4rem;
+      position: relative;
     }
 
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .radar-icon-box::after {
+      content: "";
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      animation: radarRing 3s infinite linear;
     }
 
-    .result-emoji {
-      font-size: 3rem;
-      flex-shrink: 0;
-      filter: drop-shadow(0 0 12px rgba(16,185,129,0.4));
+    @keyframes radarRing {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      100% { transform: scale(1.4); opacity: 0; }
     }
 
-    .result-text .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.7rem;
+    .standby-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      background: rgba(16,185,129,0.2);
-      border: 1px solid rgba(16,185,129,0.4);
-      color: #10b981;
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
       margin-bottom: 0.5rem;
     }
 
-    .result-text h2 {
-      font-size: 1.75rem;
+    .standby-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 380px;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    .feature-list-mini {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      text-align: left;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .feature-item-mini {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      padding: 0.55rem 0.85rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .feature-item-mini i {
+      color: var(--accent-emerald);
+    }
+
+    /* Active Prediction Spotlight Card */
+    .prediction-spotlight {
+      background: linear-gradient(165deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 29, 0.9) 45%, rgba(6, 182, 212, 0.08) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: var(--radius-xl);
+      padding: 2.2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 50px -10px rgba(16, 185, 129, 0.25);
+      animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: translateY(15px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .pred-header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--accent-emerald);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
       font-weight: 700;
-      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1.2rem;
+    }
+
+    .crop-hero-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+
+    .crop-hero-title-group h2 {
+      font-family: var(--font-display);
+      font-size: 3.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
       color: #fff;
+      text-transform: capitalize;
+      line-height: 1.1;
+    }
+
+    .crop-hero-botanical {
+      font-style: italic;
+      color: var(--accent-emerald);
+      font-size: 1.05rem;
+      margin-top: 0.2rem;
+    }
+
+    .crop-avatar-hero {
+      width: 88px;
+      height: 88px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.25));
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.2rem;
+      box-shadow: 0 0 25px var(--accent-emerald-glow);
+    }
+
+    .crop-tagline-hero {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Top 3 Recommendation Cards */
+    .top-three-wrap {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .top-three-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .top-three-note {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+
+    .top-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .rank-card {
+      background: rgba(15, 23, 29, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rank-card.rank-1 {
+      border-color: rgba(16, 185, 129, 0.45);
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 29, 0.85) 100%);
+    }
+
+    .rank-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .rank-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .rank-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-rank-1 {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .badge-rank-2 {
+      background: rgba(6, 182, 212, 0.2);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+    }
+
+    .badge-rank-3 {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-amber);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .rank-crop-name {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       margin-bottom: 0.25rem;
     }
 
-    .result-text p {
-      color: #94a3b8;
-      font-size: 0.88rem;
+    .rank-score-val {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent-emerald);
+      margin-bottom: 0.4rem;
     }
 
-    /* ── FOOTER ──────────────────────────────────────── */
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      color: #334155;
+    .progress-bar-bg {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      height: 7px;
+      width: 100%;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #06b6d4);
+      border-radius: 6px;
+      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .rank-meta {
       font-size: 0.78rem;
-      border-top: 1px solid rgba(255,255,255,0.05);
-      padding-top: 1.5rem;
+      color: var(--text-dim);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    /* SHAP Section */
+    .shap-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .shap-header {
+      margin-bottom: 1.25rem;
+    }
+
+    .shap-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .shap-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .shap-chart-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1.2rem;
+    }
+
+    .shap-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 90px;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.82rem;
+    }
+
+    .shap-label {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .shap-bar-track {
+      background: rgba(255, 255, 255, 0.04);
+      height: 24px;
+      border-radius: 6px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .shap-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      padding: 0 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .shap-pos {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.8), rgba(52, 211, 153, 0.95));
+      justify-content: flex-start;
+    }
+
+    .shap-neg {
+      background: linear-gradient(90deg, rgba(244, 63, 94, 0.8), rgba(251, 113, 133, 0.95));
+      justify-content: flex-end;
+    }
+
+    .shap-value-text {
+      font-family: var(--font-display);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .text-pos { color: var(--accent-emerald); }
+    .text-neg { color: var(--accent-rose); }
+
+    /* Comparison Dashboard Table */
+    .comparison-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 1.2rem;
+    }
+
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    .comp-table th, .comp-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .comp-table th {
+      background: rgba(255, 255, 255, 0.03);
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: var(--accent-emerald);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .comp-table td {
+      color: var(--text-muted);
+    }
+
+    .comp-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-main);
+    }
+
+    /* Profitability Cards */
+    .econ-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .econ-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 1.2rem;
+    }
+
+    .econ-card {
+      background: rgba(15, 23, 29, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+    }
+
+    .econ-crop-name {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .econ-metric-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+      font-size: 0.82rem;
+    }
+
+    .econ-metric-label {
+      color: var(--text-dim);
+    }
+
+    .econ-metric-val {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .econ-profit-highlight {
+      margin-top: 0.6rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.92rem;
+    }
+
+    .econ-profit-highlight .econ-metric-val {
+      color: var(--accent-emerald);
+      font-size: 1.05rem;
+    }
+
+    .econ-disclaimer {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 1rem;
+      line-height: 1.5;
+    }
+
+    /* Weather Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-card {
+      background: #0f171d;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      max-width: 500px;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
+
+    .modal-close:hover { color: #fff; }
+
+    .weather-search-row {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1.25rem 0;
+    }
+
+    .weather-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .weather-input:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .btn-weather-search {
+      background: var(--accent-cyan);
+      color: #000;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0 1.25rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .weather-result-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .weather-metric-badges {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    .w-badge {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.75rem 0.5rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .w-badge-val {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    .w-badge-lbl {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 3.5rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer a {
+      color: var(--accent-emerald);
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
 
-  <!-- Navigation -->
-  <nav>
-    <div class="nav-brand">
-      <div class="leaf">🌱</div>
-      AgriCrop AI
-      <span class="nav-badge">ML Powered</span>
-    </div>
-    <div class="status-dot">
-      <span class="dot"></span>
-      RandomForest Model Active
-    </div>
-  </nav>
-
-  <div class="page">
-
-    <!-- Page Header -->
-    <div class="page-header">
-      <h1>Crop <span>Recommendation</span> System</h1>
-      <p>Enter your soil and climate data to find the best crop to cultivate.</p>
-    </div>
-
-    <!-- Main Input Card -->
-    <div class="card">
-
-      <!-- Quick-fill Presets -->
-      <div class="presets-row">
-        <span class="presets-label">Quick Fill:</span>
-        <button class="preset-btn" onclick="fill('rice')">🌾 Rice</button>
-        <button class="preset-btn" onclick="fill('maize')">🌽 Maize</button>
-        <button class="preset-btn" onclick="fill('banana')">🍌 Banana</button>
-        <button class="preset-btn" onclick="fill('coffee')">☕ Coffee</button>
-        <button class="preset-btn" onclick="fill('chickpea')">🫘 Chickpea</button>
-        <button class="preset-btn" onclick="fill('watermelon')">🍉 Watermelon</button>
-      </div>
-
-      <form action="/predict" method="POST" id="form">
-
-        <!-- Soil Nutrients -->
-        <div class="section-label"><i class="fa-solid fa-flask-vial"></i> Soil Nutrients (kg/ha)</div>
-        <div class="input-grid">
-          <div class="field">
-            <label for="Nitrogen"><em class="icon">N</em> Nitrogen</label>
-            <input type="number" id="Nitrogen" name="Nitrogen" placeholder="e.g. 90" min="0" max="140" step="1" required>
-            <span class="hint">Range: 0 – 140 kg/ha</span>
-          </div>
-          <div class="field">
-            <label for="Phosporus"><em class="icon">P</em> Phosphorus</label>
-            <input type="number" id="Phosporus" name="Phosporus" placeholder="e.g. 42" min="5" max="145" step="1" required>
-            <span class="hint">Range: 5 – 145 kg/ha</span>
-          </div>
-          <div class="field">
-            <label for="Potassium"><em class="icon">K</em> Potassium</label>
-            <input type="number" id="Potassium" name="Potassium" placeholder="e.g. 43" min="5" max="205" step="1" required>
-            <span class="hint">Range: 5 – 205 kg/ha</span>
-          </div>
+  <div class="app-container">
+    
+    <!-- Top Navigation Bar -->
+    <header>
+      <div class="brand-group">
+        <div class="brand-icon">
+          <i class="fa-solid fa-leaf"></i>
         </div>
-
-        <div class="divider"></div>
-
-        <!-- Climate & Chemistry -->
-        <div class="section-label"><i class="fa-solid fa-cloud-sun"></i> Climate & Soil Chemistry</div>
-        <div class="input-grid">
-          <div class="field">
-            <label for="Temperature"><i class="fa-solid fa-temperature-half" style="color:#10b981;font-size:.7rem"></i> Temperature</label>
-            <input type="number" id="Temperature" name="Temperature" placeholder="e.g. 20.8" step="0.01" min="8" max="45" required>
-            <span class="hint">°Celsius</span>
+        <div>
+          <div class="brand-title">
+            <span data-i18n="brand_name">AgriVision AI</span>
+            <span class="brand-badge">ML Precision</span>
           </div>
-          <div class="field">
-            <label for="Humidity"><i class="fa-solid fa-droplet" style="color:#10b981;font-size:.7rem"></i> Humidity</label>
-            <input type="number" id="Humidity" name="Humidity" placeholder="e.g. 82" step="0.01" min="14" max="100" required>
-            <span class="hint">% Relative humidity</span>
-          </div>
-          <div class="field">
-            <label for="Ph"><i class="fa-solid fa-vial" style="color:#10b981;font-size:.7rem"></i> Soil pH</label>
-            <input type="number" id="Ph" name="Ph" placeholder="e.g. 6.5" step="0.01" min="3.5" max="9.9" required>
-            <span class="hint">Acidity (3.5 – 9.9)</span>
-          </div>
-          <div class="field">
-            <label for="Rainfall"><i class="fa-solid fa-cloud-showers-heavy" style="color:#10b981;font-size:.7rem"></i> Rainfall</label>
-            <input type="number" id="Rainfall" name="Rainfall" placeholder="e.g. 202.9" step="0.01" min="20" max="300" required>
-            <span class="hint">mm precipitation</span>
-          </div>
-        </div>
-
-        <!-- Submit -->
-        <div class="action-row">
-          <button type="submit" class="btn-primary">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Get Recommendation
-          </button>
-          <button type="button" class="btn-secondary" onclick="clearForm()">
-            <i class="fa-solid fa-rotate-left"></i> Clear
-          </button>
-        </div>
-
-      </form>
-
-      <!-- Result Section -->
-      {% if result %}
-      <div class="result-box">
-        <div class="result-emoji" id="cropEmoji">🌱</div>
-        <div class="result-text">
-          <div class="badge"><i class="fa-solid fa-circle-check"></i> AI Recommendation</div>
-          <h2 id="cropName">—</h2>
-          <p>{{ result }}</p>
         </div>
       </div>
-      {% endif %}
+      
+      <div class="nav-actions">
+        <button type="button" class="btn-weather-nav" onclick="openWeatherModal()">
+          <i class="fa-solid fa-cloud-sun"></i>
+          <span data-i18n="weather_btn">Live Weather Assistant</span>
+        </button>
 
-    </div><!-- /card -->
+        <button type="button" class="lang-toggle" onclick="toggleLanguage()">
+          <i class="fa-solid fa-language"></i>
+          <span id="langLabel">हिन्दी</span>
+        </button>
 
+        <div class="status-pill">
+          <span class="pulse-dot"></span>
+          <span data-i18n="status_active">RandomForest Classifier Active</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Error Alert Banner (if server returned error) -->
+    {% if error %}
+    <div class="alert-banner alert-error">
+      <div class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div class="alert-content">
+        <h4 data-i18n="error_title">Validation Error</h4>
+        <p>{{ error }}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Reliability Warnings Banner (Out-of-Distribution Inputs) -->
+    {% if warnings and warnings|length > 0 %}
+    <div class="alert-banner alert-warning">
+      <div class="alert-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+      <div class="alert-content">
+        <h4 data-i18n="reliability_warning_title">Reliability Notice (Out-of-Distribution Data)</h4>
+        <p>The following input parameters exceed the training distribution of the model. Predictions may carry elevated uncertainty:</p>
+        <ul>
+          {% for w in warnings %}
+          <li>{{ w }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Hero Title & Quick Presets -->
+    <section class="hero-banner">
+      <div class="hero-copy">
+        <h1>Predict Your Harvest with <span class="highlight">Intelligence</span></h1>
+        <p data-i18n="hero_desc">Supply soil telemetry and micro-climate parameters to discover the most biologically viable and profitable crops for your farmland.</p>
+      </div>
+
+      <div class="presets-bar">
+        <span class="preset-label" data-i18n="test_presets">Test Presets:</span>
+        <button type="button" class="preset-chip" onclick="applyPreset('rice')">
+          🌾 Paddy (Rice)
+        </button>
+        <button type="button" class="preset-chip" onclick="applyPreset('maize')">
+          🌽 Maize (Corn)
+        </button>
+        <button type="button" class="preset-chip" onclick="applyPreset('coffee')">
+          ☕ Coffee
+        </button>
+        <button type="button" class="preset-chip" onclick="applyPreset('banana')">
+          🍌 Banana
+        </button>
+        <button type="button" class="preset-chip" onclick="applyPreset('chickpea')">
+          🧆 Chickpea
+        </button>
+        <button type="button" class="preset-chip" onclick="applyPreset('watermelon')">
+          🍉 Watermelon
+        </button>
+      </div>
+    </section>
+
+    <!-- Main Application Split-Layout -->
+    <main class="dashboard-layout">
+
+      <!-- Left Column: Input Form with Interactive Sliders -->
+      <section class="glass-panel">
+        
+        <div class="section-title-wrap">
+          <h2 class="section-title">
+            <i class="fa-solid fa-sliders"></i>
+            <span data-i18n="soil_telemetry">Field & Soil Telemetry</span>
+          </h2>
+          <span class="section-subtag" data-i18n="telemetry_subtag">7 Real-Time Data Points</span>
+        </div>
+
+        <form action="/predict" method="POST" id="recommendationForm" onsubmit="handleFormSubmit()">
+          
+          <!-- Category 1: Soil Macro-Nutrients (NPK) -->
+          <div class="category-block">
+            <div class="category-header">
+              <span class="category-name">
+                <i class="fa-solid fa-flask"></i>
+                <span data-i18n="soil_nutrients">Soil Nutrients Profile</span>
+              </span>
+              <span class="category-hint" data-i18n="ratio_hint">Ratio in kg/ha</span>
+            </div>
+
+            <div class="param-grid">
+              
+              <!-- Nitrogen (N) -->
+              <div class="param-card">
+                <div class="param-top">
+                  <label for="Nitrogen" class="param-label">
+                    <span class="param-icon-badge">N</span>
+                    <span data-i18n="nitrogen">Nitrogen</span>
+                  </label>
+                  <span class="param-unit">kg/ha (0 - 140)</span>
+                </div>
+                <div class="input-sync-group">
+                  <div class="slider-track-wrap">
+                    <input type="range" id="Nitrogen_range" min="0" max="140" value="{{ inputs.N if inputs and inputs.N is defined else (inputs.Nitrogen if inputs and inputs.Nitrogen is defined else 90) }}" oninput="syncInput('Nitrogen', this.value)">
+                  </div>
+                  <input type="number" id="Nitrogen" name="Nitrogen" value="{{ inputs.N if inputs and inputs.N is defined else (inputs.Nitrogen if inputs and inputs.Nitrogen is defined else 90) }}" min="0" max="300" step="any" required class="custom-number-input" oninput="syncSlider('Nitrogen_range', this.value)">
+                </div>
+              </div>
+
+              <!-- Phosphorus (P) -->
+              <div class="param-card">
+                <div class="param-top">
+                  <label for="Phosporus" class="param-label">
+                    <span class="param-icon-badge">P</span>
+                    <span data-i18n="phosphorus">Phosphorus</span>
+                  </label>
+                  <span class="param-unit">kg/ha (5 - 145)</span>
+                </div>
+                <div class="input-sync-group">
+                  <div class="slider-track-wrap">
+                    <input type="range" id="Phosporus_range" min="5" max="145" value="{{ inputs.P if inputs and inputs.P is defined else (inputs.Phosporus if inputs and inputs.Phosporus is defined else 42) }}" oninput="syncInput('Phosporus', this.value)">
+                  </div>
+                  <input type="number" id="Phosporus" name="Phosporus" value="{{ inputs.P if inputs and inputs.P is defined else (inputs.Phosporus if inputs and inputs.Phosporus is defined else 42) }}" min="0" max="250" step="any" required class="custom-number-input" oninput="syncSlider('Phosporus_range', this.value)">
+                </div>
+              </div>
+
+              <!-- Potassium (K) -->
+              <div class="param-card">
+                <div class="param-top">
+                  <label for="Potassium" class="param-label">
+                    <span class="param-icon-badge">K</span>
+                    <span data-i18n="potassium">Potassium</span>
+                  </label>
+                  <span class="param-unit">kg/ha (5 - 205)</span>
+                </div>
+                <div class="input-sync-group">
+                  <div class="slider-track-wrap">
+                    <input type="range" id="Potassium_range" min="5" max="205" value="{{ inputs.K if inputs and inputs.K is defined else (inputs.Potassium if inputs and inputs.Potassium is defined else 43) }}" oninput="syncInput('Potassium', this.value)">
+                  </div>
+                  <input type="number" id="Potassium" name="Potassium" value="{{ inputs.K if inputs and inputs.K is defined else (inputs.Potassium if inputs and inputs.Potassium is defined else 43) }}" min="0" max="350" step="any" required class="custom-number-input" oninput="syncSlider('Potassium_range', this.value)">
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Category 2: Meteorological & Environmental Factors -->
+          <div class="category-block">
+            <div class="category-header">
+              <span class="category-name">
+                <i class="fa-solid fa-cloud-sun-rain"></i>
+                <span data-i18n="climate_heading">Micro-Climate & Soil Chemistry</span>
+              </span>
+              <span class="category-hint" data-i18n="climate_hint">Atmospheric state</span>
+            </div>
+
+            <div class="param-grid">
+
+              <!-- Temperature -->
+              <div class="param-card">
+                <div class="param-top">
+                  <label for="Temperature" class="param-label">
+                    <span class="param-icon-badge"><i class="fa-solid fa-temperature-half"></i></span>
+                    <span data-i18n="temperature">Temperature</span>
+                  </label>
+                  <span class="param-unit">°Celsius</span>
+                </div>
+                <div class="input-sync-group">
+                  <div class="slider-track-wrap">
+                    <input type="range" id="Temperature_range" min="8" max="45" step="0.1" value="{{ inputs.temperature if inputs and inputs.temperature is defined else (inputs.Temperature if inputs and inputs.Temperature is defined else 20.8) }}" oninput="syncInput('Temperature', this.value)">
+                  </div>
+                  <input type="number" step="0.01" id="Temperature" name="Temperature" value="{{ inputs.temperature if inputs and inputs.temperature is defined else (inputs.Temperature if inputs and inputs.Temperature is defined else 20.8) }}" min="-10" max="60" required class="custom-number-input" oninput="syncSlider('Temperature_range', this.value)">
+                </div>
+              </div>
+
+              <!-- Humidity -->
+              <div class="param-card">
+                <div class="param-top">
+                  <label for="Humidity" class="param-label">
+                    <span class="param-icon-badge"><i class="fa-solid fa-droplet"></i></span>
+                    <span data-i18n="humidity">Humidity</span>
+                  </label>
+                  <span class="param-unit">% Relative</span>
+                </div>
+                <div class="input-sync-group">
+                  <div class="slider-track-wrap">
+                    <input type="range" id="Humidity_range" min="14" max="100" step="0.5" value="{{ inputs.humidity if inputs and inputs.humidity is defined else (inputs.Humidity if inputs and inputs.Humidity is defined else 82.0) }}" oninput="syncInput('Humidity', this.value)">
+                  </div>
+                  <input type="number" step="0.01" id="Humidity" name="Humidity" value="{{ inputs.humidity if inputs and inputs.humidity is defined else (inputs.Humidity if inputs and inputs.Humidity is defined else 82.0) }}" min="0" max="100" required class="custom-number-input" oninput="syncSlider('Humidity_range', this.value)">
+                </div>
+              </div>
+
+              <!-- Soil pH -->
+              <div class="param-card">
+                <div class="param-top">
+                  <label for="Ph" class="param-label">
+                    <span class="param-icon-badge"><i class="fa-solid fa-vial"></i></span>
+                    <span data-i18n="soil_ph">Soil pH</span>
+                  </label>
+                  <span class="param-unit">Scale (3.5 - 9.9)</span>
+                </div>
+                <div class="input-sync-group">
+                  <div class="slider-track-wrap">
+                    <input type="range" id="Ph_range" min="3.5" max="9.9" step="0.1" value="{{ inputs.ph if inputs and inputs.ph is defined else (inputs.Ph if inputs and inputs.Ph is defined else 6.5) }}" oninput="syncInput('Ph', this.value)">
+                  </div>
+                  <input type="number" step="0.01" id="Ph" name="Ph" value="{{ inputs.ph if inputs and inputs.ph is defined else (inputs.Ph if inputs and inputs.Ph is defined else 6.5) }}" min="0" max="14" required class="custom-number-input" oninput="syncSlider('Ph_range', this.value)">
+                </div>
+              </div>
+
+              <!-- Rainfall -->
+              <div class="param-card">
+                <div class="param-top">
+                  <label for="Rainfall" class="param-label">
+                    <span class="param-icon-badge"><i class="fa-solid fa-cloud-showers-heavy"></i></span>
+                    <span data-i18n="rainfall">Rainfall</span>
+                  </label>
+                  <span class="param-unit">mm Precipitation</span>
+                </div>
+                <div class="input-sync-group">
+                  <div class="slider-track-wrap">
+                    <input type="range" id="Rainfall_range" min="20" max="300" step="1" value="{{ inputs.rainfall if inputs and inputs.rainfall is defined else (inputs.Rainfall if inputs and inputs.Rainfall is defined else 202.9) }}" oninput="syncInput('Rainfall', this.value)">
+                  </div>
+                  <input type="number" step="0.01" id="Rainfall" name="Rainfall" value="{{ inputs.rainfall if inputs and inputs.rainfall is defined else (inputs.Rainfall if inputs and inputs.Rainfall is defined else 202.9) }}" min="0" max="3500" required class="custom-number-input" oninput="syncSlider('Rainfall_range', this.value)">
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form-cta-bar">
+            <button type="submit" class="btn-predict" id="predictBtn">
+              <i class="fa-solid fa-wand-magic-sparkles" id="btnIcon"></i>
+              <span id="btnText" data-i18n="compute_btn">Compute Crop Recommendation</span>
+            </button>
+            <button type="button" class="btn-reset" onclick="resetFormToDefaults()">
+              <i class="fa-solid fa-rotate-left"></i>
+              <span data-i18n="reset_btn">Reset</span>
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- Right Column: Results & Explainable AI & Comparison -->
+      <section class="results-column">
+
+        {% if top_recommendations and top_recommendations|length > 0 %}
+        
+        <!-- Primary Crop Spotlight -->
+        {% set primary = top_recommendations[0] %}
+        <div class="prediction-spotlight">
+          <div class="pred-header-badge">
+            <i class="fa-solid fa-circle-check"></i>
+            <span data-i18n="primary_recommendation">Primary Recommendation</span>
+          </div>
+
+          <div class="crop-hero-row">
+            <div class="crop-hero-title-group">
+              <h2 id="cropNameDisplay">{{ primary.crop_name }}</h2>
+              <div class="crop-hero-botanical">{{ primary.scientific_name }} ({{ primary.family }})</div>
+            </div>
+            <div class="crop-avatar-hero" id="cropEmoji">
+              {{ primary.emoji }}
+            </div>
+          </div>
+
+          <p class="crop-tagline-hero" id="cropBioTip">
+            {{ primary.summary }}
+          </p>
+
+          <div class="status-pill" style="display: inline-flex; margin-bottom: 0;">
+            <i class="fa-solid fa-chart-pie" style="color: var(--accent-emerald);"></i>
+            <span><strong>{{ primary.score_percent }}%</strong> Ensemble Tree Vote Confidence</span>
+          </div>
+        </div>
+
+        <!-- Top 3 Ranked Recommendations Cards -->
+        <div class="top-three-wrap">
+          <h3 class="top-three-title">
+            <i class="fa-solid fa-ranking-star" style="color: var(--accent-amber);"></i>
+            <span data-i18n="top_recommendations_title">Top Recommended Crops</span>
+          </h3>
+          <p class="top-three-note" data-i18n="score_explanation">
+            Scores reflect the proportion of decision trees in the random forest ensemble voting for each crop under the input parameters.
+          </p>
+
+          <div class="top-cards-grid">
+            {% for rec in top_recommendations %}
+            <div class="rank-card rank-{{ rec.rank }}">
+              <div class="rank-header">
+                <span class="rank-badge badge-rank-{{ rec.rank }}">#{{ rec.rank }} {% if rec.rank == 1 %}Primary{% elif rec.rank == 2 %}Runner-Up{% else %}Alternative{% endif %}</span>
+                <span style="font-size: 1.5rem;">{{ rec.emoji }}</span>
+              </div>
+              <div class="rank-crop-name">{{ rec.crop_name }}</div>
+              <div class="rank-score-val">{{ rec.score_percent }}%</div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: {{ rec.score_percent }}%;"></div>
+              </div>
+              <div class="rank-meta">
+                <span><strong>Season:</strong> {{ rec.season }}</span>
+                <span><strong>Maturity:</strong> {{ rec.duration_days }}</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Explainable AI (SHAP) Waterfall Chart -->
+        {% if shap_data and shap_data.contributions %}
+        <div class="shap-panel">
+          <div class="shap-header">
+            <h3 class="shap-title">
+              <i class="fa-solid fa-brain" style="color: var(--accent-cyan);"></i>
+              <span data-i18n="shap_section_title">Explainable AI (SHAP Feature Contributions)</span>
+            </h3>
+            <p class="shap-subtitle" data-i18n="shap_desc">
+              Local SHAP contributions explaining why <strong>{{ primary.crop_name }}</strong> was ranked highest. Positive values push the model toward this crop, while negative values push away.
+            </p>
+          </div>
+
+          <div class="shap-chart-container">
+            {% for c in shap_data.contributions %}
+            <div class="shap-row">
+              <div class="shap-label">{{ c.display_name }}</div>
+              <div class="shap-bar-track">
+                {% if c.is_positive %}
+                <div class="shap-bar-fill shap-pos" style="width: {{ [c.shap_value * 200, 100]|min|abs }}%;">
+                  +{{ c.shap_value }}
+                </div>
+                {% else %}
+                <div class="shap-bar-fill shap-neg" style="width: {{ [c.shap_value * 200, 100]|min|abs }}%;">
+                  {{ c.shap_value }}
+                </div>
+                {% endif %}
+              </div>
+              <div class="shap-value-text {% if c.is_positive %}text-pos{% else %}text-neg{% endif %}">
+                {{ "%+.4f"|format(c.shap_value) }}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Crop Comparison Dashboard (Side-by-side Table) -->
+        {% if comparison_crops and comparison_crops|length > 0 %}
+        <div class="comparison-panel">
+          <h3 class="shap-title">
+            <i class="fa-solid fa-table-columns" style="color: var(--accent-emerald);"></i>
+            <span data-i18n="comparison_title">Side-by-Side Crop Comparison</span>
+          </h3>
+
+          <div class="table-responsive">
+            <table class="comp-table">
+              <thead>
+                <tr>
+                  <th>Agronomic Metric</th>
+                  {% for c in comparison_crops %}
+                  <th>{{ c.emoji }} {{ c.name }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Botanical Name</strong></td>
+                  {% for c in comparison_crops %}
+                  <td><em>{{ c.scientific_name }}</em></td>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <td><strong>Optimal Season</strong></td>
+                  {% for c in comparison_crops %}
+                  <td>{{ c.season }}</td>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <td><strong>Duration</strong></td>
+                  {% for c in comparison_crops %}
+                  <td>{{ c.duration_days }}</td>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <td><strong>Optimal pH Range</strong></td>
+                  {% for c in comparison_crops %}
+                  <td>{{ c.optimal_ph }}</td>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <td><strong>Water Requirement</strong></td>
+                  {% for c in comparison_crops %}
+                  <td>{{ c.water_req_mm }}</td>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <td><strong>Temperature Range</strong></td>
+                  {% for c in comparison_crops %}
+                  <td>{{ c.optimal_temp_c }}</td>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <td><strong>Soil Preference</strong></td>
+                  {% for c in comparison_crops %}
+                  <td>{{ c.soil_type }}</td>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <td><strong>Fertilizer Profile</strong></td>
+                  {% for c in comparison_crops %}
+                  <td>{{ c.npk_demand }}</td>
+                  {% endfor %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Estimated Economic Returns Section -->
+        <div class="econ-panel">
+          <h3 class="shap-title">
+            <i class="fa-solid fa-coins" style="color: var(--accent-amber);"></i>
+            <span data-i18n="profitability_title">Estimated Economic Returns (Per Hectare)</span>
+          </h3>
+
+          <div class="econ-grid">
+            {% for c in comparison_crops %}
+            {% set econ = c.economics %}
+            <div class="econ-card">
+              <div class="econ-crop-name">{{ c.emoji }} {{ c.name }}</div>
+              <div class="econ-metric-row">
+                <span class="econ-metric-label">Benchmark Yield:</span>
+                <span class="econ-metric-val">{{ econ.avg_yield_q_ha }} q/ha</span>
+              </div>
+              <div class="econ-metric-row">
+                <span class="econ-metric-label">Cultivation Cost:</span>
+                <span class="econ-metric-val">₹{{ "{:,}".format(econ.cost_of_cultivation_inr_ha) }}</span>
+              </div>
+              <div class="econ-metric-row">
+                <span class="econ-metric-label">Benchmark Rate:</span>
+                <span class="econ-metric-val">₹{{ "{:,}".format(econ.market_price_inr_q) }}/q</span>
+              </div>
+              <div class="econ-metric-row">
+                <span class="econ-metric-label">Gross Revenue:</span>
+                <span class="econ-metric-val">₹{{ "{:,}".format(econ.estimated_gross_revenue_inr_ha) }}</span>
+              </div>
+              <div class="econ-profit-highlight">
+                <span class="econ-metric-label" style="font-weight: 700; color: #fff;">Est. Net Profit:</span>
+                <span class="econ-metric-val">₹{{ "{:,}".format(econ.estimated_net_profit_inr_ha) }}</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <p class="econ-disclaimer" data-i18n="profitability_disclaimer">
+            Economics Disclaimer: Estimates are regional benchmarks based on CACP & Agmarknet 2024-25 MSP data. Realized revenue depends heavily on local market access, input costs, and yield variations.
+          </p>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <!-- Standby State: No Prediction Run Yet -->
+        <div class="standby-card">
+          <div class="radar-icon-box">
+            <i class="fa-solid fa-seedling"></i>
+          </div>
+
+          <h3 class="standby-title" data-i18n="awaiting_title">Awaiting Telemetry Data</h3>
+          <p class="standby-desc" data-i18n="awaiting_desc">
+            Adjust the Nitrogen, Phosphorus, Potassium sliders and climate gauges on the left, then click <strong>Compute Crop Recommendation</strong> to run the ML pipeline.
+          </p>
+
+          <div class="feature-list-mini">
+            <div class="feature-item-mini">
+              <i class="fa-solid fa-check-double"></i> 22 Commercial Crop Classes
+            </div>
+            <div class="feature-item-mini">
+              <i class="fa-solid fa-check-double"></i> Dual-Stage Scaler Pipeline (MinMax + Standard)
+            </div>
+            <div class="feature-item-mini">
+              <i class="fa-solid fa-check-double"></i> Top-3 Ranked Recommendations & SHAP Explainable AI
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+      </section>
+
+    </main>
+
+    <!-- Live Weather Modal Dialog -->
+    <div class="modal-overlay" id="weatherModal">
+      <div class="modal-card">
+        <button type="button" class="modal-close" onclick="closeWeatherModal()">&times;</button>
+        <h3 class="shap-title">
+          <i class="fa-solid fa-cloud-sun" style="color: var(--accent-cyan);"></i>
+          <span data-i18n="weather_modal_title">Fetch Live Climate by Location</span>
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
+          Query current temperature, humidity, and rainfall from Open-Meteo weather satellites.
+        </p>
+
+        <div class="weather-search-row">
+          <input type="text" id="weatherCityInput" class="weather-input" placeholder="e.g. Nagpur, Ludhiana, Pune, Patna..." onkeydown="if(event.key==='Enter'){fetchWeather();}">
+          <button type="button" class="btn-weather-search" onclick="fetchWeather()">Search</button>
+        </div>
+
+        <div id="weatherLoading" style="display: none; text-align: center; color: var(--accent-cyan); font-size: 0.9rem; margin: 1rem 0;">
+          <i class="fa-solid fa-spinner fa-spin"></i> Fetching meteorological satellite data...
+        </div>
+
+        <div id="weatherError" style="display: none; color: var(--accent-rose); font-size: 0.85rem; margin: 0.75rem 0;"></div>
+
+        <div class="weather-result-box" id="weatherResultBox">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <strong id="wLocation" style="color: #fff; font-size: 1rem;">—</strong>
+            <span id="wTime" style="font-size: 0.72rem; color: var(--text-dim);">—</span>
+          </div>
+
+          <div class="weather-metric-badges">
+            <div class="w-badge">
+              <div class="w-badge-val" id="wTemp">—</div>
+              <div class="w-badge-lbl">Temp (°C)</div>
+            </div>
+            <div class="w-badge">
+              <div class="w-badge-val" id="wHumid">—</div>
+              <div class="w-badge-lbl">Humidity (%)</div>
+            </div>
+            <div class="w-badge">
+              <div class="w-badge-val" id="wRain">—</div>
+              <div class="w-badge-lbl">Precip (mm)</div>
+            </div>
+          </div>
+
+          <p style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 0.85rem;" data-i18n="weather_disclaimer">
+            Notice: Current weather gives an instantaneous snapshot. Long-term seasonal climate data is best suited for reliable crop planning.
+          </p>
+
+          <button type="button" class="btn-predict" style="width: 100%; padding: 0.65rem;" onclick="applyWeatherToForm()">
+            <i class="fa-solid fa-check"></i>
+            <span data-i18n="weather_apply_btn">Auto-Fill Climate Inputs</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
     <footer>
-      Crop Recommendation System &copy; 2026 &nbsp;·&nbsp; Powered by RandomForest (sklearn)
+      <div>Smart Farming & Precision Agriculture System &copy; 2026</div>
+      <div>Powered by Scikit-Learn RandomForest & Explainable AI (SHAP)</div>
     </footer>
 
   </div>
 
+  <!-- Interactive JavaScript Logic -->
   <script>
-    // ── Emoji & name map ─────────────────────────────────────────────────────
-    const cropInfo = {
-      rice:        { emoji: "🌾", label: "Rice" },
-      maize:       { emoji: "🌽", label: "Maize" },
-      jute:        { emoji: "🌿", label: "Jute" },
-      cotton:      { emoji: "🪴", label: "Cotton" },
-      coconut:     { emoji: "🥥", label: "Coconut" },
-      papaya:      { emoji: "🍈", label: "Papaya" },
-      orange:      { emoji: "🍊", label: "Orange" },
-      apple:       { emoji: "🍎", label: "Apple" },
-      muskmelon:   { emoji: "🍈", label: "Muskmelon" },
-      watermelon:  { emoji: "🍉", label: "Watermelon" },
-      grapes:      { emoji: "🍇", label: "Grapes" },
-      mango:       { emoji: "🥭", label: "Mango" },
-      banana:      { emoji: "🍌", label: "Banana" },
-      pomegranate: { emoji: "🍎", label: "Pomegranate" },
-      lentil:      { emoji: "🥣", label: "Lentil" },
-      blackgram:   { emoji: "🌱", label: "Blackgram" },
-      mungbean:    { emoji: "🌱", label: "Mungbean" },
-      mothbeans:   { emoji: "🌾", label: "Mothbeans" },
-      pigeonpeas:  { emoji: "🌾", label: "Pigeonpeas" },
-      kidneybeans: { emoji: "🫘", label: "Kidney Beans" },
-      chickpea:    { emoji: "🫘", label: "Chickpea" },
-      coffee:      { emoji: "☕", label: "Coffee" },
-    };
-
-    // ── Populate emoji/name after prediction ─────────────────────────────────
-    window.addEventListener("DOMContentLoaded", function () {
-      const resultBox = document.querySelector(".result-box");
-      if (!resultBox) return;
-      const text = resultBox.querySelector("p").textContent.trim().toLowerCase();
-      for (const [key, val] of Object.entries(cropInfo)) {
-        if (text.startsWith(key)) {
-          document.getElementById("cropEmoji").textContent = val.emoji;
-          document.getElementById("cropName").textContent  = val.label;
-          break;
-        }
-      }
-    });
-
-    // ── Sample data presets (real rows from CSV) ──────────────────────────────
-    const presets = {
-      rice:       { Nitrogen: 90,  Phosporus: 42, Potassium: 43, Temperature: 20.88, Humidity: 82.00, Ph: 6.50, Rainfall: 202.94 },
-      maize:      { Nitrogen: 75,  Phosporus: 48, Potassium: 20, Temperature: 22.50, Humidity: 65.00, Ph: 6.20, Rainfall: 85.00  },
-      banana:     { Nitrogen: 100, Phosporus: 82, Potassium: 50, Temperature: 27.40, Humidity: 85.30, Ph: 5.90, Rainfall: 104.80 },
-      coffee:     { Nitrogen: 15,  Phosporus: 24, Potassium: 27, Temperature: 22.77, Humidity: 87.74, Ph: 6.74, Rainfall: 153.89 },
-      chickpea:   { Nitrogen: 40,  Phosporus: 67, Potassium: 19, Temperature: 18.87, Humidity: 16.86, Ph: 7.11, Rainfall: 80.06  },
-      watermelon: { Nitrogen: 99,  Phosporus: 17, Potassium: 50, Temperature: 25.57, Humidity: 88.77, Ph: 6.50, Rainfall: 50.49  },
-    };
-
-    function fill(key) {
-      const d = presets[key];
-      if (!d) return;
-      Object.entries(d).forEach(([id, val]) => {
-        const el = document.getElementById(id);
-        if (el) el.value = val;
-      });
+    // Two-way synchronization between number input and range slider
+    function syncInput(targetId, val) {
+      const el = document.getElementById(targetId);
+      if (el) el.value = val;
     }
 
-    function clearForm() {
-      document.getElementById("form").reset();
+    function syncSlider(targetRangeId, val) {
+      const el = document.getElementById(targetRangeId);
+      if (el) el.value = val;
+    }
+
+    // Form submission spinner state
+    function handleFormSubmit() {
+      const btn = document.getElementById("predictBtn");
+      const icon = document.getElementById("btnIcon");
+      const text = document.getElementById("btnText");
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = "0.75";
+      }
+      if (icon) icon.className = "fa-solid fa-spinner fa-spin";
+      if (text) text.textContent = "Computing ML Recommendation...";
+      return true;
+    }
+
+    // Curated Agronomic Presets
+    const presets = {
+      rice:       { Nitrogen: 90,  Phosporus: 42, Potassium: 43, Temperature: 20.8, Humidity: 82.0, Ph: 6.5, Rainfall: 202.9 },
+      maize:      { Nitrogen: 75,  Phosporus: 48, Potassium: 20, Temperature: 22.5, Humidity: 65.0, Ph: 6.2, Rainfall: 85.0  },
+      coffee:     { Nitrogen: 100, Phosporus: 25, Potassium: 30, Temperature: 25.5, Humidity: 60.0, Ph: 6.8, Rainfall: 160.0 },
+      banana:     { Nitrogen: 100, Phosporus: 82, Potassium: 50, Temperature: 27.4, Humidity: 85.3, Ph: 5.9, Rainfall: 104.8 },
+      chickpea:   { Nitrogen: 40,  Phosporus: 72, Potassium: 77, Temperature: 17.0, Humidity: 17.0, Ph: 7.5, Rainfall: 88.5  },
+      watermelon: { Nitrogen: 99,  Phosporus: 17, Potassium: 50, Temperature: 25.6, Humidity: 88.0, Ph: 6.6, Rainfall: 52.0  }
+    };
+
+    function applyPreset(cropKey) {
+      const data = presets[cropKey];
+      if (!data) return;
+
+      for (const [key, val] of Object.entries(data)) {
+        const numInput = document.getElementById(key);
+        const rangeInput = document.getElementById(key + '_range');
+        if (numInput) numInput.value = val;
+        if (rangeInput) rangeInput.value = val;
+      }
+    }
+
+    function resetFormToDefaults() {
+      applyPreset('rice');
+    }
+
+    // Weather Modal Functionality
+    function openWeatherModal() {
+      document.getElementById("weatherModal").style.display = "flex";
+    }
+
+    function closeWeatherModal() {
+      document.getElementById("weatherModal").style.display = "none";
+    }
+
+    let fetchedWeather = null;
+
+    async function fetchWeather() {
+      const city = document.getElementById("weatherCityInput").value.trim();
+      const errBox = document.getElementById("weatherError");
+      const loading = document.getElementById("weatherLoading");
+      const resBox = document.getElementById("weatherResultBox");
+
+      errBox.style.display = "none";
+      resBox.style.display = "none";
+
+      if (!city) {
+        errBox.textContent = "Please enter a city or district name.";
+        errBox.style.display = "block";
+        return;
+      }
+
+      loading.style.display = "block";
+
+      try {
+        const resp = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+        const data = await resp.json();
+        loading.style.display = "none";
+
+        if (!data.success) {
+          errBox.textContent = data.error || "Unable to fetch weather.";
+          errBox.style.display = "block";
+          return;
+        }
+
+        fetchedWeather = data;
+        document.getElementById("wLocation").textContent = data.city;
+        document.getElementById("wTime").textContent = new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        document.getElementById("wTemp").textContent = data.temperature_c + "°C";
+        document.getElementById("wHumid").textContent = data.humidity_percent + "%";
+        document.getElementById("wRain").textContent = data.rainfall_mm + " mm";
+        resBox.style.display = "block";
+
+      } catch (err) {
+        loading.style.display = "none";
+        errBox.textContent = "Network error while connecting to weather service.";
+        errBox.style.display = "block";
+      }
+    }
+
+    function applyWeatherToForm() {
+      if (!fetchedWeather) return;
+      if (fetchedWeather.temperature_c !== null) {
+        syncInput('Temperature', fetchedWeather.temperature_c);
+        syncSlider('Temperature_range', fetchedWeather.temperature_c);
+      }
+      if (fetchedWeather.humidity_percent !== null) {
+        syncInput('Humidity', fetchedWeather.humidity_percent);
+        syncSlider('Humidity_range', fetchedWeather.humidity_percent);
+      }
+      if (fetchedWeather.rainfall_mm !== null && fetchedWeather.rainfall_mm > 0) {
+        syncInput('Rainfall', fetchedWeather.rainfall_mm);
+        syncSlider('Rainfall_range', fetchedWeather.rainfall_mm);
+      }
+      closeWeatherModal();
+    }
+
+    // Bilingual Language Toggle (English / Hindi)
+    const translations = {
+      en: {
+        brand_name: "AgriVision AI",
+        status_active: "RandomForest Classifier Active",
+        hero_desc: "Supply soil telemetry and micro-climate parameters to discover the most biologically viable and profitable crops for your farmland.",
+        test_presets: "Test Presets:",
+        soil_telemetry: "Field & Soil Telemetry",
+        telemetry_subtag: "7 Real-Time Data Points",
+        soil_nutrients: "Soil Nutrients Profile",
+        ratio_hint: "Ratio in kg/ha",
+        nitrogen: "Nitrogen",
+        phosphorus: "Phosphorus",
+        potassium: "Potassium",
+        climate_heading: "Micro-Climate & Soil Chemistry",
+        climate_hint: "Atmospheric state",
+        temperature: "Temperature",
+        humidity: "Humidity",
+        soil_ph: "Soil pH",
+        rainfall: "Rainfall",
+        compute_btn: "Compute Crop Recommendation",
+        reset_btn: "Reset",
+        awaiting_title: "Awaiting Telemetry Data",
+        awaiting_desc: "Adjust the Nitrogen, Phosphorus, Potassium sliders and climate gauges on the left, then click Compute Crop Recommendation to run the ML pipeline.",
+        top_recommendations_title: "Top Recommended Crops",
+        primary_recommendation: "Primary Recommendation",
+        score_explanation: "Scores reflect the proportion of decision trees in the random forest ensemble voting for each crop under the input parameters.",
+        shap_section_title: "Explainable AI (SHAP Feature Contributions)",
+        shap_desc: "Local SHAP contributions explaining why the top crop was ranked highest. Positive values push the model toward this crop, while negative values push away.",
+        comparison_title: "Side-by-Side Crop Comparison",
+        profitability_title: "Estimated Economic Returns (Per Hectare)",
+        profitability_disclaimer: "Economics Disclaimer: Estimates are regional benchmarks based on CACP & Agmarknet 2024-25 MSP data. Realized revenue depends heavily on local market access, input costs, and yield variations.",
+        reliability_warning_title: "Reliability Notice (Out-of-Distribution Data)",
+        weather_btn: "Live Weather Assistant",
+        weather_modal_title: "Fetch Live Climate by Location",
+        weather_disclaimer: "Notice: Current weather gives an instantaneous snapshot. Long-term seasonal climate data is best suited for reliable crop planning.",
+        weather_apply_btn: "Auto-Fill Climate Inputs",
+        error_title: "Validation Error"
+      },
+      hi: {
+        brand_name: "एग्रीविज़न एआई",
+        status_active: "रैंडम फॉरेस्ट मॉडल सक्रिय",
+        hero_desc: "अपनी मिट्टी और मौसम के आंकड़े दर्ज करें और अपने खेत के लिए सबसे उपयुक्त और लाभदायक फसल का सुझाव पाएं।",
+        test_presets: "नमूना फसलें:",
+        soil_telemetry: "मिट्टी एवं जलवायु डेटा",
+        telemetry_subtag: "7 महत्वपूर्ण पैरामीटर",
+        soil_nutrients: "मिट्टी के पोषक तत्व",
+        ratio_hint: "मात्रा: किग्रा/हेक्टेयर",
+        nitrogen: "नाइट्रोजन (N)",
+        phosphorus: "फास्फोरस (P)",
+        potassium: "पोटेशियम (K)",
+        climate_heading: "जलवायु एवं मिट्टी का पीएच",
+        climate_hint: "वातावरण की स्थिति",
+        temperature: "तापमान (°C)",
+        humidity: "आर्द्रता (%)",
+        soil_ph: "मिट्टी का पीएच",
+        rainfall: "वर्षा (मिमी)",
+        compute_btn: "सर्वश्रेष्ठ फसल की गणना करें",
+        reset_btn: "रीसेट",
+        awaiting_title: "डेटा की प्रतीक्षा है",
+        awaiting_desc: "बाईं ओर दिए गए स्लाइडर की मदद से मिट्टी और मौसम की जानकारी भरें, फिर 'सर्वश्रेष्ठ फसल की गणना करें' पर क्लिक करें।",
+        top_recommendations_title: "शीर्ष अनुशंसित फसलें",
+        primary_recommendation: "सर्वश्रेष्ठ अनुशंसा",
+        score_explanation: "रैंडम फॉरेस्ट मॉडल के डिसीजन ट्री द्वारा इस फसल के पक्ष में दिए गए मतों का प्रतिशत।",
+        shap_section_title: "एआई व्याख्या (SHAP)",
+        shap_desc: "यह चार्ट दर्शाता है कि किन पर्यावरणीय कारकों ने इस फसल के चयन में सबसे अधिक योगदान दिया।",
+        comparison_title: "फसल तुलना तालिका",
+        profitability_title: "अनुमानित आर्थिक लाभ (प्रति हेक्टेयर)",
+        profitability_disclaimer: "आर्थिक अस्वीकरण: अनुमान CACP व Agmarknet 2024-25 एमएसपी दरों पर आधारित हैं। वास्तविक आय स्थानीय मंडी भाव और उपज पर निर्भर करती है।",
+        reliability_warning_title: "विश्वसनीयता चेतावनी",
+        weather_btn: "मौसम सहायक (लाइव वेदर)",
+        weather_modal_title: "स्थान के अनुसार मौसम प्राप्त करें",
+        weather_disclaimer: "सूचना: वर्तमान मौसम तात्कालिक स्थिति दर्शाता है। फसल योजना के लिए मौसमी जलवायु उपयुक्त होती है।",
+        weather_apply_btn: "जलवायु आंकड़े स्वचालित भरें",
+        error_title: "डेटा त्रुटि"
+      }
+    };
+
+    let currentLang = 'en';
+
+    function toggleLanguage() {
+      currentLang = (currentLang === 'en') ? 'hi' : 'en';
+      document.getElementById('langLabel').textContent = (currentLang === 'en') ? 'हिन्दी' : 'English';
+
+      const dict = translations[currentLang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          el.textContent = dict[key];
+        }
+      });
     }
   </script>
 </body>

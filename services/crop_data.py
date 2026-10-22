@@ -1,0 +1,658 @@
+"""
+Agronomic and Economic Knowledge Base for all 22 Crop Classes.
+Traceable sources:
+- Food and Agriculture Organization (FAO) EcoCrop Database
+- Indian Council of Agricultural Research (ICAR) Handbook of Agriculture
+- Directorate of Economics & Statistics (DES), Ministry of Agriculture & Farmers Welfare, GoI
+- Commission for Agricultural Costs and Prices (CACP) Price Policy Reports
+- Agmarknet Agricultural Wholesale Market Portal
+"""
+
+from typing import Dict, Any, Optional
+
+CROP_AGRONOMIC_DATA: Dict[str, Dict[str, Any]] = {
+    "rice": {
+        "id": 1,
+        "name": "Rice",
+        "scientific_name": "Oryza sativa",
+        "family": "Poaceae (Gramineae)",
+        "emoji": "🌾",
+        "season": "Kharif (Monsoon)",
+        "duration_days": "105 - 145 days",
+        "water_req_mm": "1000 - 1500 mm (seasonal 150 - 300 mm)",
+        "optimal_temp_c": "20°C - 35°C",
+        "optimal_ph": "5.5 - 7.0",
+        "soil_type": "Clay, clayey-loam, alluvial lowland soils with high moisture retention",
+        "npk_demand": "High Nitrogen (80-120), Moderate Phosphorus (30-50), Moderate Potassium (40-60)",
+        "prominent_regions": "West Bengal, Uttar Pradesh, Punjab, Andhra Pradesh, Odisha, Tamil Nadu",
+        "summary": "Staple cereal requiring warm climate, standing water during tillering, and heavy clayey loam soils.",
+        "economics": {
+            "avg_yield_q_ha": 40.0,
+            "cost_of_cultivation_inr_ha": 42000,
+            "market_price_inr_q": 2300,  # MSP benchmark 2024-25
+            "estimated_gross_revenue_inr_ha": 92000,
+            "estimated_net_profit_inr_ha": 50000,
+            "source": "CACP Kharif Price Policy / DES GoI (MSP Reference: Common Paddy 2024-25)"
+        }
+    },
+    "maize": {
+        "id": 2,
+        "name": "Maize",
+        "scientific_name": "Zea mays",
+        "family": "Poaceae",
+        "emoji": "🌽",
+        "season": "Kharif / Rabi",
+        "duration_days": "90 - 120 days",
+        "water_req_mm": "500 - 800 mm (seasonal 50 - 100 mm)",
+        "optimal_temp_c": "18°C - 28°C",
+        "optimal_ph": "5.8 - 7.2",
+        "soil_type": "Well-drained deep fertile loamy soils rich in organic matter",
+        "npk_demand": "High Nitrogen (90-120), High Phosphorus (40-60), Moderate Potassium (20-40)",
+        "prominent_regions": "Karnataka, Madhya Pradesh, Bihar, Maharashtra, Telangana",
+        "summary": "Versatile cereal crop requiring abundant sunlight, well-drained loams, and sensitivity to waterlogging.",
+        "economics": {
+            "avg_yield_q_ha": 35.0,
+            "cost_of_cultivation_inr_ha": 36000,
+            "market_price_inr_q": 2225,
+            "estimated_gross_revenue_inr_ha": 77875,
+            "estimated_net_profit_inr_ha": 41875,
+            "source": "CACP Kharif Price Policy / Agmarknet (2024-25)"
+        }
+    },
+    "jute": {
+        "id": 3,
+        "name": "Jute",
+        "scientific_name": "Corchorus capsularis / olitorius",
+        "family": "Malvaceae",
+        "emoji": "🌿",
+        "season": "Kharif",
+        "duration_days": "120 - 150 days",
+        "water_req_mm": "1000 - 1250 mm (seasonal 150 - 250 mm)",
+        "optimal_temp_c": "24°C - 35°C",
+        "optimal_ph": "6.0 - 7.5",
+        "soil_type": "New alluvial soils along river basins, sandy loam to clay loam",
+        "npk_demand": "Moderate Nitrogen (60-80), Moderate Phosphorus (30-40), High Potassium (40-60)",
+        "prominent_regions": "West Bengal, Bihar, Assam, Meghalaya, Odisha",
+        "summary": "Golden fiber crop thriving in warm humid subtropical climate with seasonal inundation.",
+        "economics": {
+            "avg_yield_q_ha": 25.0,
+            "cost_of_cultivation_inr_ha": 45000,
+            "market_price_inr_q": 5335,  # TD-5 Grade MSP 2024-25
+            "estimated_gross_revenue_inr_ha": 133375,
+            "estimated_net_profit_inr_ha": 88375,
+            "source": "CACP Jute Price Policy / Jute Corporation of India (2024-25)"
+        }
+    },
+    "cotton": {
+        "id": 4,
+        "name": "Cotton",
+        "scientific_name": "Gossypium hirsutum",
+        "family": "Malvaceae",
+        "emoji": "☁️",
+        "season": "Kharif",
+        "duration_days": "150 - 180 days",
+        "water_req_mm": "600 - 1000 mm (seasonal 60 - 110 mm)",
+        "optimal_temp_c": "21°C - 32°C",
+        "optimal_ph": "6.0 - 8.0",
+        "soil_type": "Deep black soils (Regur / Vertisols) with excellent moisture capacity",
+        "npk_demand": "High Nitrogen (100-120), Moderate Phosphorus (40-60), High Potassium (40-60)",
+        "prominent_regions": "Gujarat, Maharashtra, Telangana, Rajasthan, Haryana",
+        "summary": "Commercial fiber crop requiring frost-free periods, ample sunlight, and black cotton soil.",
+        "economics": {
+            "avg_yield_q_ha": 18.0,
+            "cost_of_cultivation_inr_ha": 52000,
+            "market_price_inr_q": 7121,  # Medium staple MSP 2024-25
+            "estimated_gross_revenue_inr_ha": 128178,
+            "estimated_net_profit_inr_ha": 76178,
+            "source": "CACP Cotton Report (2024-25)"
+        }
+    },
+    "coconut": {
+        "id": 5,
+        "name": "Coconut",
+        "scientific_name": "Cocos nucifera",
+        "family": "Arecaceae",
+        "emoji": "🥥",
+        "season": "Perennial Plantation",
+        "duration_days": "Perennial (Bearing year 5 - 60)",
+        "water_req_mm": "1300 - 2300 mm well-distributed",
+        "optimal_temp_c": "25°C - 34°C",
+        "optimal_ph": "5.2 - 8.0",
+        "soil_type": "Coastal sandy loams, alluvial, red sandy loam with good drainage",
+        "npk_demand": "Balanced Potassium-heavy nutrition (N: 500g, P: 320g, K: 1200g/palm/year)",
+        "prominent_regions": "Kerala, Tamil Nadu, Karnataka, Andhra Pradesh",
+        "summary": "Tree of Life; thrives in humid coastal climates with non-waterlogged soils.",
+        "economics": {
+            "avg_yield_q_ha": 10000.0,  # measured in nuts/ha
+            "cost_of_cultivation_inr_ha": 58000,
+            "market_price_inr_q": 15,  # per nut average wholesale
+            "estimated_gross_revenue_inr_ha": 150000,
+            "estimated_net_profit_inr_ha": 92000,
+            "source": "Coconut Development Board / Agmarknet (2024-25)"
+        }
+    },
+    "papaya": {
+        "id": 6,
+        "name": "Papaya",
+        "scientific_name": "Carica papaya",
+        "family": "Caricaceae",
+        "emoji": "🍈",
+        "season": "Round-the-year",
+        "duration_days": "270 - 365 days (First harvest 9-10 months)",
+        "water_req_mm": "1000 - 1500 mm (avoid stagnant water)",
+        "optimal_temp_c": "22°C - 33°C",
+        "optimal_ph": "6.0 - 7.0",
+        "soil_type": "Well-drained rich sandy loam with high organic matter",
+        "npk_demand": "High Nitrogen (200-250), High Phosphorus (200-250), High Potassium (250-300)",
+        "prominent_regions": "Gujarat, Andhra Pradesh, Madhya Pradesh, Karnataka, Maharashtra",
+        "summary": "Fast-growing tropical fruit requiring warm weather and porous soil; sensitive to frost and waterlogging.",
+        "economics": {
+            "avg_yield_q_ha": 600.0,
+            "cost_of_cultivation_inr_ha": 110000,
+            "market_price_inr_q": 1200,
+            "estimated_gross_revenue_inr_ha": 720000,
+            "estimated_net_profit_inr_ha": 610000,
+            "source": "National Horticulture Board (NHB) Commercial Horticulture Data"
+        }
+    },
+    "orange": {
+        "id": 7,
+        "name": "Orange",
+        "scientific_name": "Citrus sinensis / reticulata",
+        "family": "Rutaceae",
+        "emoji": "🍊",
+        "season": "Perennial Orchard",
+        "duration_days": "Perennial (Bearing year 4 onward)",
+        "water_req_mm": "900 - 1200 mm",
+        "optimal_temp_c": "15°C - 35°C",
+        "optimal_ph": "6.0 - 7.5",
+        "soil_type": "Deep, well-aerated light loams and alluvial soils with low water table",
+        "npk_demand": "Moderate Nitrogen, Low Phosphorus, Moderate Potassium",
+        "prominent_regions": "Maharashtra (Nagpur), Punjab, Rajasthan, Madhya Pradesh",
+        "summary": "Citrus fruit requiring subtropical climate with distinct dry spell for flowering.",
+        "economics": {
+            "avg_yield_q_ha": 150.0,
+            "cost_of_cultivation_inr_ha": 85000,
+            "market_price_inr_q": 2800,
+            "estimated_gross_revenue_inr_ha": 420000,
+            "estimated_net_profit_inr_ha": 335000,
+            "source": "NHB & Agmarknet Citrus Market Studies"
+        }
+    },
+    "apple": {
+        "id": 8,
+        "name": "Apple",
+        "scientific_name": "Malus domestica",
+        "family": "Rosaceae",
+        "emoji": "🍎",
+        "season": "Temperate Perennial",
+        "duration_days": "Perennial (130-150 days bloom to harvest)",
+        "water_req_mm": "1000 - 1250 mm distributed",
+        "optimal_temp_c": "10°C - 24°C (requires 800-1200 chilling hours <7°C)",
+        "optimal_ph": "5.5 - 6.8",
+        "soil_type": "Deep, fertile, well-drained loams rich in humus, no hard pan within 1m",
+        "npk_demand": "Balanced NPK with micronutrients (Boron, Zinc)",
+        "prominent_regions": "Jammu & Kashmir, Himachal Pradesh, Uttarakhand",
+        "summary": "Premier temperate fruit needing winter chilling and mountain loamy soils.",
+        "economics": {
+            "avg_yield_q_ha": 120.0,
+            "cost_of_cultivation_inr_ha": 160000,
+            "market_price_inr_q": 6500,
+            "estimated_gross_revenue_inr_ha": 780000,
+            "estimated_net_profit_inr_ha": 620000,
+            "source": "NHB Apple Statistics & Kashmir Horticulture Directorate"
+        }
+    },
+    "muskmelon": {
+        "id": 9,
+        "name": "Muskmelon",
+        "scientific_name": "Cucumis melo",
+        "family": "Cucurbitaceae",
+        "emoji": "🍈",
+        "season": "Zaid (Summer)",
+        "duration_days": "75 - 90 days",
+        "water_req_mm": "350 - 500 mm (requires dry climate at maturity)",
+        "optimal_temp_c": "24°C - 32°C",
+        "optimal_ph": "6.0 - 7.0",
+        "soil_type": "Sandy loams, riverbed soils with warm bottom temperature",
+        "npk_demand": "Moderate Nitrogen (80-100), Moderate Phosphorus (40-50), Moderate Potassium (40-60)",
+        "prominent_regions": "Uttar Pradesh, Punjab, Andhra Pradesh, Madhya Pradesh",
+        "summary": "Warm-season cucurbit; low humidity and long sunny days maximize sweetness.",
+        "economics": {
+            "avg_yield_q_ha": 180.0,
+            "cost_of_cultivation_inr_ha": 48000,
+            "market_price_inr_q": 1400,
+            "estimated_gross_revenue_inr_ha": 252000,
+            "estimated_net_profit_inr_ha": 204000,
+            "source": "ICAR Vegetable Horticulture Directorate"
+        }
+    },
+    "watermelon": {
+        "id": 10,
+        "name": "Watermelon",
+        "scientific_name": "Citrullus lanatus",
+        "family": "Cucurbitaceae",
+        "emoji": "🍉",
+        "season": "Zaid (Summer)",
+        "duration_days": "80 - 100 days",
+        "water_req_mm": "400 - 600 mm (seasonal 40 - 60 mm)",
+        "optimal_temp_c": "24°C - 30°C",
+        "optimal_ph": "6.0 - 7.0",
+        "soil_type": "Sandy to sandy loam, riverbeds with deep root penetration",
+        "npk_demand": "High Nitrogen (80-100), Moderate Phosphorus (40-50), High Potassium (60-80)",
+        "prominent_regions": "Uttar Pradesh, Karnataka, Andhra Pradesh, Tamil Nadu, Maharashtra",
+        "summary": "Heat-loving vine crop demanding sandy warm soil and dry sunny harvest period.",
+        "economics": {
+            "avg_yield_q_ha": 300.0,
+            "cost_of_cultivation_inr_ha": 60000,
+            "market_price_inr_q": 900,
+            "estimated_gross_revenue_inr_ha": 270000,
+            "estimated_net_profit_inr_ha": 210000,
+            "source": "NHB Commercial Cucurbit Production Data"
+        }
+    },
+    "grapes": {
+        "id": 11,
+        "name": "Grapes",
+        "scientific_name": "Vitis vinifera",
+        "family": "Vitaceae",
+        "emoji": "🍇",
+        "season": "Perennial Vineyard",
+        "duration_days": "Perennial (120 - 150 days pruning to harvest)",
+        "water_req_mm": "500 - 700 mm (seasonal 60 - 80 mm)",
+        "optimal_temp_c": "15°C - 35°C",
+        "optimal_ph": "6.5 - 7.5",
+        "soil_type": "Well-drained sandy loam, gravelly red loam, black soil with good subsoil drainage",
+        "npk_demand": "High Potassium, Moderate Nitrogen, Moderate Phosphorus",
+        "prominent_regions": "Maharashtra (Nashik, Sangli), Karnataka, Tamil Nadu, Andhra Pradesh",
+        "summary": "High-value horticultural crop; sensitive to rain during ripening (causes berry cracking).",
+        "economics": {
+            "avg_yield_q_ha": 220.0,
+            "cost_of_cultivation_inr_ha": 220000,
+            "market_price_inr_q": 4500,
+            "estimated_gross_revenue_inr_ha": 990000,
+            "estimated_net_profit_inr_ha": 770000,
+            "source": "NRC for Grapes / Maharashtra Rajya Draksha Bagaitdar Sangh"
+        }
+    },
+    "mango": {
+        "id": 12,
+        "name": "Mango",
+        "scientific_name": "Mangifera indica",
+        "family": "Anacardiaceae",
+        "emoji": "🥭",
+        "season": "Perennial Orchard",
+        "duration_days": "Perennial (Bloom to fruit 100 - 130 days)",
+        "water_req_mm": "750 - 1100 mm",
+        "optimal_temp_c": "24°C - 30°C",
+        "optimal_ph": "5.5 - 7.5",
+        "soil_type": "Deep rich alluvial and red loamy soils with 2m depth free from hard rock",
+        "npk_demand": "Moderate Nitrogen, Low-to-Moderate Phosphorus, High Potassium",
+        "prominent_regions": "Uttar Pradesh, Andhra Pradesh, Karnataka, Bihar, Gujarat",
+        "summary": "King of Fruits; requires hot dry weather during flowering and fruit development.",
+        "economics": {
+            "avg_yield_q_ha": 100.0,
+            "cost_of_cultivation_inr_ha": 75000,
+            "market_price_inr_q": 3500,
+            "estimated_gross_revenue_inr_ha": 350000,
+            "estimated_net_profit_inr_ha": 275000,
+            "source": "NHB Mango Database / Agmarknet Wholesale"
+        }
+    },
+    "banana": {
+        "id": 13,
+        "name": "Banana",
+        "scientific_name": "Musa acuminata",
+        "family": "Musaceae",
+        "emoji": "🍌",
+        "season": "Year-round",
+        "duration_days": "300 - 365 days",
+        "water_req_mm": "1500 - 2000 mm (seasonal 90 - 120 mm)",
+        "optimal_temp_c": "25°C - 32°C",
+        "optimal_ph": "6.0 - 7.5",
+        "soil_type": "Deep fertile rich loamy soil with 40% clay, neutral pH and high organic matter",
+        "npk_demand": "Heavy feeder: High Nitrogen (200), Moderate Phosphorus (50), Very High Potassium (300)",
+        "prominent_regions": "Tamil Nadu, Maharashtra (Jalgaon), Gujarat, Andhra Pradesh",
+        "summary": "Heavy gross feeder requiring rich organic soils, continuous soil moisture, and high humidity.",
+        "economics": {
+            "avg_yield_q_ha": 550.0,
+            "cost_of_cultivation_inr_ha": 180000,
+            "market_price_inr_q": 1600,
+            "estimated_gross_revenue_inr_ha": 880000,
+            "estimated_net_profit_inr_ha": 700000,
+            "source": "NRC for Banana / NHB Commercial Statistics"
+        }
+    },
+    "pomegranate": {
+        "id": 14,
+        "name": "Pomegranate",
+        "scientific_name": "Punica granatum",
+        "family": "Lythraceae",
+        "emoji": "🫐",
+        "season": "Perennial Orchard",
+        "duration_days": "Perennial (135 - 165 days flowering to fruit)",
+        "water_req_mm": "500 - 700 mm (seasonal 100 - 120 mm)",
+        "optimal_temp_c": "20°C - 35°C",
+        "optimal_ph": "6.5 - 7.5",
+        "soil_type": "Deep loamy or alluvial soils; tolerates light and slightly alkaline soils",
+        "npk_demand": "Moderate Nitrogen, Moderate Phosphorus, High Potassium",
+        "prominent_regions": "Maharashtra (Solapur), Gujarat, Karnataka, Rajasthan",
+        "summary": "Drought-hardy semi-arid fruit; hot dry climate yields sweetest arils.",
+        "economics": {
+            "avg_yield_q_ha": 120.0,
+            "cost_of_cultivation_inr_ha": 150000,
+            "market_price_inr_q": 7500,
+            "estimated_gross_revenue_inr_ha": 900000,
+            "estimated_net_profit_inr_ha": 750000,
+            "source": "NRC on Pomegranate (Solapur) & NHB (2024)"
+        }
+    },
+    "lentil": {
+        "id": 15,
+        "name": "Lentil",
+        "scientific_name": "Lens culinaris",
+        "family": "Fabaceae",
+        "emoji": "🥣",
+        "season": "Rabi (Winter)",
+        "duration_days": "100 - 130 days",
+        "water_req_mm": "300 - 450 mm (seasonal 40 - 60 mm)",
+        "optimal_temp_c": "15°C - 25°C",
+        "optimal_ph": "6.0 - 7.5",
+        "soil_type": "Light loams to alluvial soils, well-drained, tolerant to mild acidity",
+        "npk_demand": "Low Nitrogen (fixes atmospheric N), Moderate Phosphorus (40), Low Potassium (20)",
+        "prominent_regions": "Madhya Pradesh, Uttar Pradesh, West Bengal, Bihar",
+        "summary": "Cool-season nutritious pulse crop that fixes atmospheric nitrogen and restores soil fertility.",
+        "economics": {
+            "avg_yield_q_ha": 12.0,
+            "cost_of_cultivation_inr_ha": 26000,
+            "market_price_inr_q": 6700,  # MSP benchmark 2024-25
+            "estimated_gross_revenue_inr_ha": 80400,
+            "estimated_net_profit_inr_ha": 54400,
+            "source": "CACP Rabi Price Policy Report (2024-25)"
+        }
+    },
+    "blackgram": {
+        "id": 16,
+        "name": "Blackgram",
+        "scientific_name": "Vigna mungo",
+        "family": "Fabaceae",
+        "emoji": "🌱",
+        "season": "Kharif / Rabi / Zaid",
+        "duration_days": "70 - 90 days",
+        "water_req_mm": "400 - 600 mm (seasonal 60 - 75 mm)",
+        "optimal_temp_c": "25°C - 35°C",
+        "optimal_ph": "6.5 - 7.8",
+        "soil_type": "Loamy to heavy soils, black cotton soil with high moisture retention",
+        "npk_demand": "Low Nitrogen (20 kg starter), Moderate Phosphorus (40-50 kg), Low Potassium",
+        "prominent_regions": "Madhya Pradesh, Andhra Pradesh, Uttar Pradesh, Tamil Nadu, Maharashtra",
+        "summary": "Short-duration pulse that enriches soil through biological nitrogen fixation.",
+        "economics": {
+            "avg_yield_q_ha": 10.0,
+            "cost_of_cultivation_inr_ha": 25000,
+            "market_price_inr_q": 7400,  # MSP benchmark 2024-25
+            "estimated_gross_revenue_inr_ha": 74000,
+            "estimated_net_profit_inr_ha": 49000,
+            "source": "CACP Kharif Price Policy Report (2024-25)"
+        }
+    },
+    "mungbean": {
+        "id": 17,
+        "name": "Mungbean",
+        "scientific_name": "Vigna radiata",
+        "family": "Fabaceae",
+        "emoji": "🌱",
+        "season": "Kharif / Summer",
+        "duration_days": "60 - 75 days",
+        "water_req_mm": "350 - 500 mm (seasonal 40 - 60 mm)",
+        "optimal_temp_c": "25°C - 35°C",
+        "optimal_ph": "6.2 - 7.5",
+        "soil_type": "Well-drained sandy loam to alluvial loam; does not tolerate salinity or waterlogging",
+        "npk_demand": "Low Nitrogen (20 kg starter), Moderate Phosphorus (40 kg), Low Potassium",
+        "prominent_regions": "Rajasthan, Madhya Pradesh, Maharashtra, Karnataka, Bihar",
+        "summary": "Ultra-short duration green gram; ideal for catch cropping and green manuring.",
+        "economics": {
+            "avg_yield_q_ha": 9.0,
+            "cost_of_cultivation_inr_ha": 24000,
+            "market_price_inr_q": 8682,  # Highest pulse MSP 2024-25
+            "estimated_gross_revenue_inr_ha": 78138,
+            "estimated_net_profit_inr_ha": 54138,
+            "source": "CACP Kharif Price Policy Report (2024-25)"
+        }
+    },
+    "mothbeans": {
+        "id": 18,
+        "name": "Mothbeans",
+        "scientific_name": "Vigna aconitifolia",
+        "family": "Fabaceae",
+        "emoji": "🌾",
+        "season": "Kharif",
+        "duration_days": "75 - 90 days",
+        "water_req_mm": "250 - 400 mm (seasonal 30 - 55 mm)",
+        "optimal_temp_c": "24°C - 35°C",
+        "optimal_ph": "6.5 - 8.0",
+        "soil_type": "Arid sandy to light loamy soils with quick drainage",
+        "npk_demand": "Low Nitrogen (fixes N), Low Phosphorus (20-30), Low Potassium",
+        "prominent_regions": "Rajasthan, Gujarat, Haryana, Maharashtra",
+        "summary": "The most drought-resistant grain legume cultivated in arid regions; thrives in sandy soils.",
+        "economics": {
+            "avg_yield_q_ha": 6.0,
+            "cost_of_cultivation_inr_ha": 18000,
+            "market_price_inr_q": 6500,
+            "estimated_gross_revenue_inr_ha": 39000,
+            "estimated_net_profit_inr_ha": 21000,
+            "source": "Rajasthan State Agricultural Marketing Board & Agmarknet"
+        }
+    },
+    "pigeonpeas": {
+        "id": 19,
+        "name": "Pigeonpeas",
+        "scientific_name": "Cajanus cajan",
+        "family": "Fabaceae",
+        "emoji": "🌾",
+        "season": "Kharif",
+        "duration_days": "150 - 200 days",
+        "water_req_mm": "600 - 800 mm (seasonal 90 - 150 mm)",
+        "optimal_temp_c": "20°C - 32°C",
+        "optimal_ph": "6.5 - 7.5",
+        "soil_type": "Deep fertile loams to clay loams with good internal drainage",
+        "npk_demand": "Low Nitrogen (25 kg), Moderate Phosphorus (50 kg), Low Potassium",
+        "prominent_regions": "Maharashtra, Karnataka, Madhya Pradesh, Gujarat, Uttar Pradesh",
+        "summary": "Deep-rooted drought-hardy pulse (Arhar/Tur); excels in intercropping with cotton and cereals.",
+        "economics": {
+            "avg_yield_q_ha": 12.0,
+            "cost_of_cultivation_inr_ha": 34000,
+            "market_price_inr_q": 7550,  # MSP benchmark 2024-25
+            "estimated_gross_revenue_inr_ha": 90600,
+            "estimated_net_profit_inr_ha": 56600,
+            "source": "CACP Kharif Price Policy Report (2024-25)"
+        }
+    },
+    "kidneybeans": {
+        "id": 20,
+        "name": "Kidneybeans",
+        "scientific_name": "Phaseolus vulgaris",
+        "family": "Fabaceae",
+        "emoji": "🫘",
+        "season": "Rabi (Plains) / Kharif (Hills)",
+        "duration_days": "90 - 120 days",
+        "water_req_mm": "500 - 700 mm (seasonal 60 - 150 mm)",
+        "optimal_temp_c": "15°C - 25°C",
+        "optimal_ph": "5.5 - 6.5",
+        "soil_type": "Rich, well-drained loams rich in organic matter; sensitive to saline/alkaline soils",
+        "npk_demand": "Moderate Nitrogen (inefficient N-fixer, needs 90-100 kg N), High Phosphorus (60 kg)",
+        "prominent_regions": "Jammu & Kashmir, Himachal Pradesh, Uttarakhand, Maharashtra",
+        "summary": "Rajma; cool-climate pulse requiring moderate moisture and organically fertile soils.",
+        "economics": {
+            "avg_yield_q_ha": 15.0,
+            "cost_of_cultivation_inr_ha": 38000,
+            "market_price_inr_q": 9000,
+            "estimated_gross_revenue_inr_ha": 135000,
+            "estimated_net_profit_inr_ha": 97000,
+            "source": "NHB & Himalayan Organic Agriculture Consortium"
+        }
+    },
+    "chickpea": {
+        "id": 21,
+        "name": "Chickpea",
+        "scientific_name": "Cicer arietinum",
+        "family": "Fabaceae",
+        "emoji": "🧆",
+        "season": "Rabi (Winter)",
+        "duration_days": "90 - 110 days",
+        "water_req_mm": "350 - 500 mm (seasonal 65 - 80 mm)",
+        "optimal_temp_c": "15°C - 25°C",
+        "optimal_ph": "6.0 - 8.0",
+        "soil_type": "Well-drained sandy loams, clay loams, vertisols; intolerant of waterlogging",
+        "npk_demand": "Low Nitrogen (20 kg), Moderate Phosphorus (40-50 kg), Low Potassium",
+        "prominent_regions": "Madhya Pradesh, Maharashtra, Rajasthan, Karnataka, Uttar Pradesh",
+        "summary": "India's major pulse (Gram/Chana); thrives on residual soil moisture during winter months.",
+        "economics": {
+            "avg_yield_q_ha": 14.0,
+            "cost_of_cultivation_inr_ha": 28000,
+            "market_price_inr_q": 5440,  # MSP benchmark 2024-25
+            "estimated_gross_revenue_inr_ha": 76160,
+            "estimated_net_profit_inr_ha": 48160,
+            "source": "CACP Rabi Price Policy Report (2024-25)"
+        }
+    },
+    "coffee": {
+        "id": 22,
+        "name": "Coffee",
+        "scientific_name": "Coffea arabica / canephora",
+        "family": "Rubiaceae",
+        "emoji": "☕",
+        "season": "Perennial Plantation",
+        "duration_days": "Perennial (Bloom to cherry 240 - 270 days)",
+        "water_req_mm": "1500 - 2000 mm (seasonal 150 - 200 mm)",
+        "optimal_temp_c": "20°C - 28°C",
+        "optimal_ph": "5.0 - 6.5",
+        "soil_type": "Deep, fertile, permeable volcanic or forest loam rich in organic matter",
+        "npk_demand": "High Nitrogen, High Potassium, Moderate Phosphorus, acidic soil requirement",
+        "prominent_regions": "Karnataka (Kodagu, Chikkamagaluru), Kerala (Wayanad), Tamil Nadu",
+        "summary": "Highland shade-grown beverage plantation crop requiring acidic soils and steady humidity.",
+        "economics": {
+            "avg_yield_q_ha": 10.0,  # Clean parchment coffee
+            "cost_of_cultivation_inr_ha": 95000,
+            "market_price_inr_q": 28000,  # Specialty Arabica/Robusta parchment
+            "estimated_gross_revenue_inr_ha": 280000,
+            "estimated_net_profit_inr_ha": 185000,
+            "source": "Coffee Board of India & International Coffee Organization (2024)"
+        }
+    }
+}
+
+
+# Bilingual UI Translations (English and Hindi)
+I18N_STRINGS = {
+    "en": {
+        "brand_name": "AgriVision AI",
+        "brand_subtitle": "Intelligent Crop Recommendation Engine",
+        "status_active": "RandomForest Classifier Active",
+        "hero_title": "Predict Your Harvest with Intelligence",
+        "hero_desc": "Supply soil telemetry and micro-climate parameters to discover the most biologically viable and profitable crops for your farmland.",
+        "test_presets": "Test Presets",
+        "soil_telemetry": "Field & Soil Telemetry",
+        "telemetry_subtag": "7 Real-Time Data Points",
+        "soil_nutrients": "Soil Nutrients Profile",
+        "ratio_hint": "Ratio in kg/ha",
+        "nitrogen": "Nitrogen",
+        "phosphorus": "Phosphorus",
+        "potassium": "Potassium",
+        "climate_heading": "Micro-Climate & Soil Chemistry",
+        "climate_hint": "Atmospheric & hydrological state",
+        "temperature": "Temperature",
+        "humidity": "Humidity",
+        "soil_ph": "Soil pH",
+        "rainfall": "Rainfall",
+        "compute_btn": "Compute Crop Recommendation",
+        "reset_btn": "Reset Inputs",
+        "awaiting_title": "Awaiting Telemetry Data",
+        "awaiting_desc": "Adjust the Nitrogen, Phosphorus, Potassium sliders and climate gauges on the left, then click 'Compute Crop Recommendation' to run the ML pipeline.",
+        "top_recommendations_title": "Top Recommended Crops",
+        "primary_recommendation": "Primary Recommendation",
+        "ensemble_confidence": "Ensemble Tree Vote Score",
+        "score_explanation": "Proportion of individual decision trees in the random forest ensemble voting for this crop based on the input environment.",
+        "shap_section_title": "Explainable AI (SHAP)",
+        "shap_desc": "Local feature contributions explaining why this specific crop was ranked highest. Positive values push the model toward this crop, while negative values push away.",
+        "global_shap_title": "Global Model Feature Importance",
+        "comparison_title": "Crop Comparison Matrix",
+        "profitability_title": "Estimated Economic Returns",
+        "profitability_disclaimer": "Economics Disclaimer: Estimates are regional benchmarks based on CACP & Agmarknet 2024-25 MSP data. Realized revenue depends heavily on local market access, input costs, and yield variations.",
+        "reliability_warning_title": "Data Distribution Reliability Notice",
+        "weather_btn": "Live Weather Assistant",
+        "weather_modal_title": "Fetch Live Climate by Location",
+        "weather_disclaimer": "Notice: Current weather gives an instantaneous snapshot. Long-term seasonal climate data is best suited for reliable crop planning.",
+        "weather_apply_btn": "Auto-Fill Climate Inputs",
+        "error_title": "Input Error Detected",
+        "rank": "Rank",
+        "scientific_name": "Botanical Name",
+        "family": "Family",
+        "duration": "Duration",
+        "season": "Season",
+        "water_req": "Water Requirement",
+        "optimal_ph_col": "Optimal pH",
+        "optimal_temp_col": "Optimal Temp",
+        "cost_ha": "Cost of Cultivation",
+        "gross_revenue": "Est. Gross Revenue",
+        "net_profit": "Est. Net Profit",
+        "source": "Source"
+    },
+    "hi": {
+        "brand_name": "एग्रीविज़न एआई",
+        "brand_subtitle": "स्मार्ट फसल अनुशंसा प्रणाली",
+        "status_active": "रैंडम फॉरेस्ट मॉडल सक्रिय",
+        "hero_title": "कृत्रिम बुद्धिमत्ता के साथ सही फसल चुनें",
+        "hero_desc": "अपनी मिट्टी और मौसम के आंकड़े दर्ज करें और अपने खेत के लिए सबसे उपयुक्त और लाभदायक फसल का सुझाव पाएं।",
+        "test_presets": "नमूना फसलें",
+        "soil_telemetry": "मिट्टी एवं जलवायु डेटा",
+        "telemetry_subtag": "7 महत्वपूर्ण पैरामीटर",
+        "soil_nutrients": "मिट्टी के पोषक तत्व",
+        "ratio_hint": "मात्रा: किग्रा/हेक्टेयर",
+        "nitrogen": "नाइट्रोजन (N)",
+        "phosphorus": "फास्फोरस (P)",
+        "potassium": "पोटेशियम (K)",
+        "climate_heading": "जलवायु एवं मिट्टी का पीएच",
+        "climate_hint": "वातावरण एवं वर्षा की स्थिति",
+        "temperature": "तापमान (°C)",
+        "humidity": "आर्द्रता (%)",
+        "soil_ph": "मिट्टी का पीएच",
+        "rainfall": "वर्षा (मिमी)",
+        "compute_btn": "सर्वश्रेष्ठ फसल की गणना करें",
+        "reset_btn": "रीसेट करें",
+        "awaiting_title": "डेटा की प्रतीक्षा है",
+        "awaiting_desc": "बाईं ओर दिए गए स्लाइडर की मदद से मिट्टी और मौसम की जानकारी भरें, फिर 'सर्वश्रेष्ठ फसल की गणना करें' पर क्लिक करें।",
+        "top_recommendations_title": "शीर्ष 3 अनुशंसित फसलें",
+        "primary_recommendation": "सर्वश्रेष्ठ अनुशंसा",
+        "ensemble_confidence": "मॉडल कॉन्फिडेंस स्कोर",
+        "score_explanation": "रैंडम फॉरेस्ट मॉडल के डिसीजन ट्री द्वारा इस फसल के पक्ष में दिए गए मतों का प्रतिशत।",
+        "shap_section_title": "एआई व्याख्या (SHAP)",
+        "shap_desc": "यह चार्ट दर्शाता है कि किन पर्यावरणीय कारकों ने इस फसल के चयन में सबसे अधिक योगदान दिया।",
+        "global_shap_title": "समग्र मॉडल में कारकों का महत्व",
+        "comparison_title": "फसल तुलना तालिका",
+        "profitability_title": "अनुमानित आर्थिक लाभ (मुनाफ़ा)",
+        "profitability_disclaimer": "आर्थिक अस्वीकरण: अनुमान CACP व Agmarknet 2024-25 एमएसपी दरों पर आधारित हैं। वास्तविक आय स्थानीय मंडी भाव और उपज पर निर्भर करती है।",
+        "reliability_warning_title": "विश्वसनीयता चेतावनी",
+        "weather_btn": "मौसम सहायक (लाइव वेदर)",
+        "weather_modal_title": "स्थान के अनुसार मौसम प्राप्त करें",
+        "weather_disclaimer": "सूचना: वर्तमान मौसम तात्कालिक स्थिति दर्शाता है। फसल योजना के लिए मौसमी जलवायु उपयुक्त होती है।",
+        "weather_apply_btn": "जलवायु आंकड़े स्वचालित भरें",
+        "error_title": "डेटा त्रुटि",
+        "rank": "रैंक",
+        "scientific_name": "वानस्पतिक नाम",
+        "family": "कुल (Family)",
+        "duration": "अवधि",
+        "season": "मौसम / ऋतु",
+        "water_req": "जल आवश्यकता",
+        "optimal_ph_col": "अनुकूल पीएच",
+        "optimal_temp_col": "अनुकूल तापमान",
+        "cost_ha": "लागत (प्रति हेक्टेयर)",
+        "gross_revenue": "सकल आय (अनुमानित)",
+        "net_profit": "शुद्ध लाभ (अनुमानित)",
+        "source": "स्रोत"
+    }
+}
+
+
+def get_crop_details(crop_name: str) -> Optional[Dict[str, Any]]:
+    """Returns agronomic and economic data for a given crop name."""
+    return CROP_AGRONOMIC_DATA.get(crop_name.lower().strip())
