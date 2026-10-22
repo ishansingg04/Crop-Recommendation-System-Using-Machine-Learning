@@ -1,132 +1,556 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-  </head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crop Recommendation AI</title>
+  <meta name="description" content="AI-powered crop recommendation system using soil and climate data.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
-		h1 {
-			color: mediumseagreen;
-			text-align: center;
-		}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-		.warning {
-			color: red;
-			font-weight: bold;
-			text-align: center;
-		}
-		.card{
-		margin-left:410px;
-		margin-top: 20px;
-		color: white;
-		}
-		.container{
-		background:#edf2f7;
-		font-weight: bold;
-		padding-bottom:10px;
-		border-radius: 15px;
-		}
-	</style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0f14;
+      color: #e2e8f0;
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 10% 20%, rgba(16,185,129,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse at 90% 80%, rgba(6,182,212,0.07) 0%, transparent 55%);
+    }
 
+    /* ── NAV ─────────────────────────────────────────── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      background: rgba(10,15,20,0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #fff;
+    }
 
+    .nav-brand .leaf {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 0 14px rgba(16,185,129,0.4);
+    }
 
-  <body style="background:#BCBBB8">
-  <!--=======================navbar=====================================================-->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/">Crop Recommendation</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Contact</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled">About</a>
-        </li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
+    .nav-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      background: rgba(16,185,129,0.15);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #10b981;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: blink 2s infinite ease-in-out;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+    }
+
+    /* ── PAGE LAYOUT ─────────────────────────────────── */
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header h1 span {
+      background: linear-gradient(135deg, #10b981, #34d399, #67e8f9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-header p {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    /* ── MAIN CARD ───────────────────────────────────── */
+    .card {
+      background: rgba(15,22,30,0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    }
+
+    /* ── SECTION HEADING ─────────────────────────────── */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #10b981;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(16,185,129,0.2);
+    }
+
+    /* ── INPUT GRID ──────────────────────────────────── */
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .field label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .field label .icon {
+      width: 20px; height: 20px;
+      background: rgba(16,185,129,0.1);
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: #10b981;
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    .field input[type="number"] {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.65rem 0.85rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    .field input[type="number"]:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+    }
+
+    .field input[type="number"]::placeholder {
+      color: #334155;
+    }
+
+    .field .hint {
+      font-size: 0.7rem;
+      color: #475569;
+    }
+
+    /* ── DIVIDER ─────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      margin: 1.5rem 0;
+    }
+
+    /* ── PRESETS ─────────────────────────────────────── */
+    .presets-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .presets-label {
+      font-size: 0.75rem;
+      color: #475569;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .preset-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      color: #94a3b8;
+      border-radius: 20px;
+      padding: 0.32rem 0.8rem;
+      font-size: 0.8rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .preset-btn:hover {
+      background: rgba(16,185,129,0.1);
+      border-color: rgba(16,185,129,0.4);
+      color: #fff;
+    }
+
+    /* ── ACTION ROW ──────────────────────────────────── */
+    .action-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 0.85rem 1.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 8px 20px rgba(16,185,129,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(16,185,129,0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #64748b;
+      border-radius: 12px;
+      padding: 0.85rem 1.2rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* ── RESULT ──────────────────────────────────────── */
+    .result-box {
+      margin-top: 1.75rem;
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      background: linear-gradient(135deg,
+        rgba(16,185,129,0.12) 0%,
+        rgba(6,182,212,0.06) 100%);
+      border: 1px solid rgba(16,185,129,0.35);
+      animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-emoji {
+      font-size: 3rem;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 12px rgba(16,185,129,0.4));
+    }
+
+    .result-text .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(16,185,129,0.2);
+      border: 1px solid rgba(16,185,129,0.4);
+      color: #10b981;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-text h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+
+    .result-text p {
+      color: #94a3b8;
+      font-size: 0.88rem;
+    }
+
+    /* ── FOOTER ──────────────────────────────────────── */
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      color: #334155;
+      font-size: 0.78rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-brand">
+      <div class="leaf">🌱</div>
+      AgriCrop AI
+      <span class="nav-badge">ML Powered</span>
     </div>
-  </div>
-</nav>
+    <div class="status-dot">
+      <span class="dot"></span>
+      RandomForest Model Active
+    </div>
+  </nav>
 
-<!--==========================================================================================-->
-  <div class="container my-3 mt-3">
-      <h1 class="text-success">Crop Recommendation System <span class="text-success">🌱</span></h1>
+  <div class="page">
 
-<!--      adding form-->
-      <form action="/predict" method="POST">
-          <div class="row">
-              <div class="col-md-4">
-					<label for="Nitrogen">Nitrogen</label>
-					<input type="number" id="Nitrogen" name="Nitrogen" placeholder="Enter Nitrogen" class="form-control" required step="0">
-				</div>
-               <div class="col-md-4">
-					<label for="Phosporus">Phosphorus</label>
-					<input type="number" id="Phosporus" name="Phosporus" placeholder="Enter Phosphorus" class="form-control" required step="00">
-				</div>
-				<div class="col-md-4">
-					<label for="Potassium">Potassium</label>
-					<input type="number" id="Potassium" name="Potassium" placeholder="Enter Potassium" class="form-control" required step="0">
-				</div>
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>Crop <span>Recommendation</span> System</h1>
+      <p>Enter your soil and climate data to find the best crop to cultivate.</p>
+    </div>
+
+    <!-- Main Input Card -->
+    <div class="card">
+
+      <!-- Quick-fill Presets -->
+      <div class="presets-row">
+        <span class="presets-label">Quick Fill:</span>
+        <button class="preset-btn" onclick="fill('rice')">🌾 Rice</button>
+        <button class="preset-btn" onclick="fill('maize')">🌽 Maize</button>
+        <button class="preset-btn" onclick="fill('banana')">🍌 Banana</button>
+        <button class="preset-btn" onclick="fill('coffee')">☕ Coffee</button>
+        <button class="preset-btn" onclick="fill('chickpea')">🫘 Chickpea</button>
+        <button class="preset-btn" onclick="fill('watermelon')">🍉 Watermelon</button>
+      </div>
+
+      <form action="/predict" method="POST" id="form">
+
+        <!-- Soil Nutrients -->
+        <div class="section-label"><i class="fa-solid fa-flask-vial"></i> Soil Nutrients (kg/ha)</div>
+        <div class="input-grid">
+          <div class="field">
+            <label for="Nitrogen"><em class="icon">N</em> Nitrogen</label>
+            <input type="number" id="Nitrogen" name="Nitrogen" placeholder="e.g. 90" min="0" max="140" step="1" required>
+            <span class="hint">Range: 0 – 140 kg/ha</span>
           </div>
+          <div class="field">
+            <label for="Phosporus"><em class="icon">P</em> Phosphorus</label>
+            <input type="number" id="Phosporus" name="Phosporus" placeholder="e.g. 42" min="5" max="145" step="1" required>
+            <span class="hint">Range: 5 – 145 kg/ha</span>
+          </div>
+          <div class="field">
+            <label for="Potassium"><em class="icon">K</em> Potassium</label>
+            <input type="number" id="Potassium" name="Potassium" placeholder="e.g. 43" min="5" max="205" step="1" required>
+            <span class="hint">Range: 5 – 205 kg/ha</span>
+          </div>
+        </div>
 
-          <div class="row mt-4">
-				<div class="col-md-4">
-					<label for="Temperature">Temperature</label>
-					<input type="number" step="0.01" id="Temperature" name="Temperature" placeholder="Enter Temperature in °C" class="form-control" required step="0">
-				</div>
-				<div class="col-md-4">
-					<label for="Humidity">Humidity</label>
-					<input type="number" step="0.01" id="Humidity" name="Humidity" placeholder="Enter Humidity in %" class="form-control" required step="0">
-				</div>
-				<div class="col-md-4">
-					<label for="pH">pH</label>
-					<input type="number" step="0.01" id="Ph" name="Ph" placeholder="Enter pH value" class="form-control" required step="0">
-				</div>
-			</div>
+        <div class="divider"></div>
 
-          <div class="row mt-4">
-				<div class="col-md-4">
-					<label for="Rainfall">Rainfall</label>
-					<input type="number" step="0.01" id="Rainfall" name="Rainfall" placeholder="Enter Rainfall in mm" class="form-control" required>
-				</div>
-			</div>
+        <!-- Climate & Chemistry -->
+        <div class="section-label"><i class="fa-solid fa-cloud-sun"></i> Climate & Soil Chemistry</div>
+        <div class="input-grid">
+          <div class="field">
+            <label for="Temperature"><i class="fa-solid fa-temperature-half" style="color:#10b981;font-size:.7rem"></i> Temperature</label>
+            <input type="number" id="Temperature" name="Temperature" placeholder="e.g. 20.8" step="0.01" min="8" max="45" required>
+            <span class="hint">°Celsius</span>
+          </div>
+          <div class="field">
+            <label for="Humidity"><i class="fa-solid fa-droplet" style="color:#10b981;font-size:.7rem"></i> Humidity</label>
+            <input type="number" id="Humidity" name="Humidity" placeholder="e.g. 82" step="0.01" min="14" max="100" required>
+            <span class="hint">% Relative humidity</span>
+          </div>
+          <div class="field">
+            <label for="Ph"><i class="fa-solid fa-vial" style="color:#10b981;font-size:.7rem"></i> Soil pH</label>
+            <input type="number" id="Ph" name="Ph" placeholder="e.g. 6.5" step="0.01" min="3.5" max="9.9" required>
+            <span class="hint">Acidity (3.5 – 9.9)</span>
+          </div>
+          <div class="field">
+            <label for="Rainfall"><i class="fa-solid fa-cloud-showers-heavy" style="color:#10b981;font-size:.7rem"></i> Rainfall</label>
+            <input type="number" id="Rainfall" name="Rainfall" placeholder="e.g. 202.9" step="0.01" min="20" max="300" required>
+            <span class="hint">mm precipitation</span>
+          </div>
+        </div>
 
+        <!-- Submit -->
+        <div class="action-row">
+          <button type="submit" class="btn-primary">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Get Recommendation
+          </button>
+          <button type="button" class="btn-secondary" onclick="clearForm()">
+            <i class="fa-solid fa-rotate-left"></i> Clear
+          </button>
+        </div>
 
-
-           <div class="row mt-4">
-
-           <div class="col-md-12 text-center">
-				<button type="submit" class="btn btn-primary btn-lg">Get Recommendation</button>
-			</div>
-			</div>
       </form>
 
+      <!-- Result Section -->
+      {% if result %}
+      <div class="result-box">
+        <div class="result-emoji" id="cropEmoji">🌱</div>
+        <div class="result-text">
+          <div class="badge"><i class="fa-solid fa-circle-check"></i> AI Recommendation</div>
+          <h2 id="cropName">—</h2>
+          <p>{{ result }}</p>
+        </div>
+      </div>
+      {% endif %}
 
+    </div><!-- /card -->
 
-       {% if result %}
-		<div class="card bg-dark" style="width: 18rem;">
-		  <img src="{{url_for('static', filename='img.jpg')}}" class="card-img-top" alt="...">
-		  <div class="card-body">
-			<h5 class="card-title">Recommend Crop for cultivation is:</h5>
-			<p class="card-text">{{ result }}</p>
-		  </div>
-		</div>
-	   {% endif %}
+    <footer>
+      Crop Recommendation System &copy; 2026 &nbsp;·&nbsp; Powered by RandomForest (sklearn)
+    </footer>
+
   </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-  </body>
+  <script>
+    // ── Emoji & name map ─────────────────────────────────────────────────────
+    const cropInfo = {
+      rice:        { emoji: "🌾", label: "Rice" },
+      maize:       { emoji: "🌽", label: "Maize" },
+      jute:        { emoji: "🌿", label: "Jute" },
+      cotton:      { emoji: "🪴", label: "Cotton" },
+      coconut:     { emoji: "🥥", label: "Coconut" },
+      papaya:      { emoji: "🍈", label: "Papaya" },
+      orange:      { emoji: "🍊", label: "Orange" },
+      apple:       { emoji: "🍎", label: "Apple" },
+      muskmelon:   { emoji: "🍈", label: "Muskmelon" },
+      watermelon:  { emoji: "🍉", label: "Watermelon" },
+      grapes:      { emoji: "🍇", label: "Grapes" },
+      mango:       { emoji: "🥭", label: "Mango" },
+      banana:      { emoji: "🍌", label: "Banana" },
+      pomegranate: { emoji: "🍎", label: "Pomegranate" },
+      lentil:      { emoji: "🥣", label: "Lentil" },
+      blackgram:   { emoji: "🌱", label: "Blackgram" },
+      mungbean:    { emoji: "🌱", label: "Mungbean" },
+      mothbeans:   { emoji: "🌾", label: "Mothbeans" },
+      pigeonpeas:  { emoji: "🌾", label: "Pigeonpeas" },
+      kidneybeans: { emoji: "🫘", label: "Kidney Beans" },
+      chickpea:    { emoji: "🫘", label: "Chickpea" },
+      coffee:      { emoji: "☕", label: "Coffee" },
+    };
+
+    // ── Populate emoji/name after prediction ─────────────────────────────────
+    window.addEventListener("DOMContentLoaded", function () {
+      const resultBox = document.querySelector(".result-box");
+      if (!resultBox) return;
+      const text = resultBox.querySelector("p").textContent.trim().toLowerCase();
+      for (const [key, val] of Object.entries(cropInfo)) {
+        if (text.startsWith(key)) {
+          document.getElementById("cropEmoji").textContent = val.emoji;
+          document.getElementById("cropName").textContent  = val.label;
+          break;
+        }
+      }
+    });
+
+    // ── Sample data presets (real rows from CSV) ──────────────────────────────
+    const presets = {
+      rice:       { Nitrogen: 90,  Phosporus: 42, Potassium: 43, Temperature: 20.88, Humidity: 82.00, Ph: 6.50, Rainfall: 202.94 },
+      maize:      { Nitrogen: 75,  Phosporus: 48, Potassium: 20, Temperature: 22.50, Humidity: 65.00, Ph: 6.20, Rainfall: 85.00  },
+      banana:     { Nitrogen: 100, Phosporus: 82, Potassium: 50, Temperature: 27.40, Humidity: 85.30, Ph: 5.90, Rainfall: 104.80 },
+      coffee:     { Nitrogen: 15,  Phosporus: 24, Potassium: 27, Temperature: 22.77, Humidity: 87.74, Ph: 6.74, Rainfall: 153.89 },
+      chickpea:   { Nitrogen: 40,  Phosporus: 67, Potassium: 19, Temperature: 18.87, Humidity: 16.86, Ph: 7.11, Rainfall: 80.06  },
+      watermelon: { Nitrogen: 99,  Phosporus: 17, Potassium: 50, Temperature: 25.57, Humidity: 88.77, Ph: 6.50, Rainfall: 50.49  },
+    };
+
+    function fill(key) {
+      const d = presets[key];
+      if (!d) return;
+      Object.entries(d).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val;
+      });
+    }
+
+    function clearForm() {
+      document.getElementById("form").reset();
+    }
+  </script>
+</body>
 </html>
